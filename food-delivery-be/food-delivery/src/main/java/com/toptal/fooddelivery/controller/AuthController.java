@@ -11,6 +11,7 @@ import com.toptal.fooddelivery.response.JwtResponse;
 import com.toptal.fooddelivery.response.MessageResponse;
 import com.toptal.fooddelivery.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,13 +77,13 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
@@ -92,11 +93,7 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()));
 
 
-        Role role = new Role();
-        if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER)) role.setName(RoleEnum.ROLE_OWNER);
-        else role.setName(RoleEnum.ROLE_USER);
-
-        user.setRole(role);
+        user.setRole(new Role(RoleEnum.ROLE_USER));
         userRepository.save(user);
 
         return authenticateUser(new LoginRequest(signUpRequest.getUsername(),signUpRequest.getPassword()));

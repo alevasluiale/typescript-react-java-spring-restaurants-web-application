@@ -14,21 +14,9 @@ public class SignupRequest {
     @Email
     private String email;
 
-    private String role;
-
-    private Long id;
-
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -54,11 +42,4 @@ public class SignupRequest {
         this.password = password;
     }
 
-    public String getRole() {
-        return this.role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

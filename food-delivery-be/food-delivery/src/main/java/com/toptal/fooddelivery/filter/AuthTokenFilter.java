@@ -1,7 +1,7 @@
 package com.toptal.fooddelivery.filter;
 
-import com.toptal.timezones.jwtutil.JwtUtils;
-import com.toptal.timezones.service.UserDetailsServiceImpl;
+import com.toptal.fooddelivery.jwtutil.JwtUtils;
+import com.toptal.fooddelivery.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
