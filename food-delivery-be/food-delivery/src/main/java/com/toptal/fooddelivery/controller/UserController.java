@@ -2,7 +2,6 @@ package com.toptal.fooddelivery.controller;
 
 import com.toptal.fooddelivery.enums.RoleEnum;
 import com.toptal.fooddelivery.model.Role;
-import com.toptal.fooddelivery.model.RoleEnum;
 import com.toptal.fooddelivery.model.User;
 import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.SignupRequest;
@@ -23,7 +22,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/users")
-public class UsersController {
+public class UserController {
     @Autowired
     UserRepository userRepository;
 
