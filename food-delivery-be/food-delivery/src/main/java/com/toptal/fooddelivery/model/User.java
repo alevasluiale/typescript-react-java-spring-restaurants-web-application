@@ -1,6 +1,7 @@
 package com.toptal.fooddelivery.model;
 
 import com.toptal.fooddelivery.enums.RoleEnum;
+import com.toptal.fooddelivery.enums.TypeEnum;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -36,21 +38,30 @@ public class User {
     @Size(max = 120)
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "type_id",referencedColumnName = "type_id")
-    private Type type;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TypeEnum type;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    private Role role;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
 
     public User() {
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password)
+    {
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public User(String username, String email, String password,TypeEnum type,RoleEnum role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.type = type;
+        this.role = role;
     }
 
 
@@ -86,19 +97,19 @@ public class User {
         this.password = password;
     }
 
-    public Type getType() {
+    public TypeEnum getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(TypeEnum type) {
         this.type = type;
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 }

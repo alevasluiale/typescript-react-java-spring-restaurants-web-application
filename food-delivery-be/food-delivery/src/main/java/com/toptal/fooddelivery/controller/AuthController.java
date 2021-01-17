@@ -1,9 +1,9 @@
 package com.toptal.fooddelivery.controller;
 
 import com.toptal.fooddelivery.enums.RoleEnum;
+import com.toptal.fooddelivery.enums.TypeEnum;
 import com.toptal.fooddelivery.jwtutil.JwtUtils;
 import com.toptal.fooddelivery.model.*;
-import com.toptal.fooddelivery.repository.RoleRepository;
 import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.LoginRequest;
 import com.toptal.fooddelivery.request.SignupRequest;
@@ -33,9 +33,6 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -93,7 +90,8 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()));
 
 
-        user.setRole(new Role(RoleEnum.ROLE_USER));
+        user.setRole(RoleEnum.ROLE_USER);
+        user.setType(TypeEnum.EMAIL);
         userRepository.save(user);
 
         return authenticateUser(new LoginRequest(signUpRequest.getUsername(),signUpRequest.getPassword()));

@@ -1,12 +1,10 @@
 package com.toptal.fooddelivery.response;
 
-import com.toptal.fooddelivery.model.Role;
-
-import java.util.Set;
+import com.toptal.fooddelivery.enums.RoleEnum;
 
 public interface UsersInfoResponse {
     Long getId();
     String getUsername();
     String getEmail();
-    Role getRole();
+    RoleEnum getRole();
 }

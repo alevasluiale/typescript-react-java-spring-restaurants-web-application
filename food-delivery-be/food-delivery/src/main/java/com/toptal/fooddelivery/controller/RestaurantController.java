@@ -26,7 +26,7 @@ public class RestaurantController {
         return restaurantRepository.findAll();
     }
 
-    @GetMapping("/addRestaurant")
+    @PostMapping("/addRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     public ResponseEntity<?> addRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
         if(restaurantRepository.existsByName(restaurantRequest.getName())){
@@ -44,7 +44,7 @@ public class RestaurantController {
         return ResponseEntity.ok("Restaurant added successfully");
     }
 
-    @GetMapping("/updateRestaurant")
+    @PostMapping("/updateRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     public ResponseEntity<?> updateRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest, @RequestParam(name="restaurantId") Long restaurantId) {
         if(!restaurantRepository.existsById(restaurantId)){
@@ -55,15 +55,19 @@ public class RestaurantController {
 
         Restaurant restaurant = restaurantRepository.getOne(restaurantId);
 
-        restaurant.setName(restaurantRequest.getName());
-        restaurant.setDescription(restaurantRequest.getDescription());
+        if(restaurantRequest.getName() != null && !restaurantRequest.getName().isEmpty() && !restaurantRequest.getName().isBlank()) {
+            restaurant.setName(restaurantRequest.getName());
+        }
+        if(restaurantRequest.getDescription() != null && !restaurantRequest.getDescription().isEmpty() && !restaurantRequest.getDescription().isBlank()) {
+            restaurant.setDescription(restaurantRequest.getDescription());
+        }
 
         restaurantRepository.save(restaurant);
 
         return ResponseEntity.ok("Restaurant updated successfully");
     }
 
-    @GetMapping("/deleteRestaurant")
+    @PutMapping("/deleteRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     public ResponseEntity<?> updateRestaurant(@RequestParam(name="restaurantId") Long restaurantId) {
         if (!restaurantRepository.existsById(restaurantId)) {
