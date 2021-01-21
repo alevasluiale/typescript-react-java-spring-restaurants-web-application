@@ -58,7 +58,7 @@ public class UserController {
         Set<Role> roles = new HashSet<Role>();
         if(signUpRequest.getRole().equals(RoleEnum.ROLE_USER)
                 || signUpRequest.getRole().isEmpty()
-                    || signUpRequest.getRole().isBlank()) roles.add(new Role(RoleEnum.ROLE_USER));
+                || signUpRequest.getRole().isBlank()) roles.add(new Role(RoleEnum.ROLE_USER));
         else if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER)) roles.add(new Role(RoleEnum.ROLE_OWNER));
         else if(signUpRequest.getRole().equals(RoleEnum.ROLE_ADMIN)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin user cannot be created by other admin"));

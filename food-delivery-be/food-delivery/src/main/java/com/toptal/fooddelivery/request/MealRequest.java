@@ -3,7 +3,7 @@ package com.toptal.fooddelivery.request;
 public class MealRequest {
     private String name;
     private String description;
-    private double price;
+    private Double price;
 
     public String getName() {
         return name;
@@ -21,7 +21,7 @@ public class MealRequest {
         this.description = description;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 

@@ -3,6 +3,7 @@ package com.toptal.fooddelivery.model;
 import com.toptal.fooddelivery.enums.StatusEnum;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "statuses")
@@ -16,12 +17,24 @@ public class Status {
     @Column(length = 20)
     private StatusEnum name;
 
-
+    @OneToMany(mappedBy ="status")
+    private Set<OrderStatus> orders;
     public Status() {}
 
-    public Status(Long id, StatusEnum name) {
-        this.id = id;
+    public Status(StatusEnum name) {
         this.name = name;
+    }
+
+    public Status(Set<OrderStatus> orders) {
+        this.orders = orders;
+    }
+
+    public Set<OrderStatus> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<OrderStatus> orders) {
+        this.orders = orders;
     }
 
     public Long getId() {

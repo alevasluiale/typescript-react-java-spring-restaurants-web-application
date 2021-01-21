@@ -38,6 +38,7 @@ public class MealController {
         Meal meal = new Meal();
         meal.setName(mealRequest.getName());
         meal.setDescription(mealRequest.getDescription());
+        meal.setPrice(mealRequest.getPrice());
 
         mealRepository.save(meal);
 
@@ -61,7 +62,9 @@ public class MealController {
         if(mealRequest.getDescription() != null && !mealRequest.getDescription().isEmpty() && !mealRequest.getDescription().isBlank()) {
             meal.setDescription(mealRequest.getDescription());
         }
-
+        if(mealRequest.getPrice() != null ) {
+            meal.setPrice(mealRequest.getPrice().doubleValue());
+        }
         mealRepository.save(meal);
 
         return ResponseEntity.ok("Meal updated successfully");

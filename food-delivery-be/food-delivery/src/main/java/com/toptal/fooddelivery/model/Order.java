@@ -12,7 +12,7 @@ public class Order {
     @Column(name="order_id")
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
     @JoinTable(
             name="ordered_meals",
             joinColumns = @JoinColumn(name="order_id"),
@@ -25,18 +25,15 @@ public class Order {
     @Column(name="total_amount")
     private double totalAmount;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinTable(name ="Order_Status",
-            joinColumns = {@JoinColumn(name="order_id")},
-            inverseJoinColumns = {@JoinColumn(name="status_id")})
-    private Set<Status> statuses;
-
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinTable(name ="Order_Restaurant",
-            joinColumns = {@JoinColumn(name="order_id")},
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
+    @JoinTable(name ="order_restaurant",
+            joinColumns = {@JoinColumn(name="user_id")},
             inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
-    private Set<Restaurant> restaurants;
+    private Set<Restaurant> restaurants = new HashSet<Restaurant>();
 
+
+    @OneToMany(mappedBy = "order")
+    private Set<OrderStatus> orderStatuses = new HashSet<OrderStatus>();
 
     public Order() {}
 
@@ -50,21 +47,21 @@ public class Order {
         this.id = id;
     }
 
-    public Order(Long id, Set<Meal> meals, Date date, double totalAmount, Set<Status> statuses, Set<Restaurant> restaurants) {
+    public Order(Long id, Set<Meal> meals, Date date, double totalAmount, Set<Restaurant> restaurants,Set<OrderStatus> orderStatuses) {
         this.id = id;
         this.meals = meals;
         this.date = date;
         this.totalAmount = totalAmount;
-        this.statuses = statuses;
         this.restaurants = restaurants;
+        this.orderStatuses = orderStatuses;
     }
 
-    public Set<Status> getStatuses() {
-        return statuses;
+    public Set<OrderStatus> getOrderStatuses() {
+        return orderStatuses;
     }
 
-    public void setStatuses(Set<Status> statuses) {
-        this.statuses = statuses;
+    public void setOrderStatuses(Set<OrderStatus> orderStatuses) {
+        this.orderStatuses = orderStatuses;
     }
 
     public Set<Restaurant> getRestaurants() {
