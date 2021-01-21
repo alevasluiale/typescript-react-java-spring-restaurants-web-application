@@ -21,7 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -90,8 +92,14 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()));
 
 
-        user.setRole(RoleEnum.ROLE_USER);
-        user.setType(TypeEnum.EMAIL);
+        Set<Role> roles = new HashSet<Role>();
+        Set<Type> types = new HashSet<Type>();
+
+        roles.add(new Role(RoleEnum.ROLE_USER));
+        types.add(new Type(TypeEnum.EMAIL));
+
+        user.setRoles(roles);
+        user.setTypes(types);
         userRepository.save(user);
 
         return authenticateUser(new LoginRequest(signUpRequest.getUsername(),signUpRequest.getPassword()));

@@ -2,7 +2,10 @@ package com.toptal.fooddelivery.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(	name = "meals")
@@ -20,25 +23,22 @@ public class Meal {
     @Size(max = 250)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name="order_id", nullable=false)
-    private Order order;
+    @NotNull
+    private double price;
+
 
     public Meal() {}
 
+    public Meal(Long id, @NotBlank @Size(max = 100) String name, @NotBlank @Size(max = 250) String description,@NotNull double price) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+    }
     public Meal(Long id, @NotBlank @Size(max = 100) String name, @NotBlank @Size(max = 250) String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-    }
-    public Meal(Order order) {
-        this.order = order;
-    }
-    public Meal(Long id, @NotBlank @Size(max = 100) String name, @NotBlank @Size(max = 250) String description,Order order) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.order = order;
     }
     public Long getId() {
         return id;
@@ -63,4 +63,13 @@ public class Meal {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
 }

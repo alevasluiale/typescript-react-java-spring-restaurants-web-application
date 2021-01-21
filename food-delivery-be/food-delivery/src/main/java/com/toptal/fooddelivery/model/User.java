@@ -38,13 +38,18 @@ public class User {
     @Size(max = 120)
     private String password;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private TypeEnum type;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="User_Type",
+            joinColumns = {@JoinColumn(name="user_id")},
+            inverseJoinColumns = {@JoinColumn(name="type_id")})
+    private Set<Type> types;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="User_Role",
+        joinColumns = {@JoinColumn(name="user_id")},
+        inverseJoinColumns = {@JoinColumn(name="role_id")})
+    private Set<Role> roles;
+
 
     public User() {
     }
@@ -56,14 +61,14 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String email, String password,TypeEnum type,RoleEnum role) {
+    public User(Long id, @NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email, @NotBlank @Size(max = 120) String password, Set<Type> types, Set<Role> roles) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.type = type;
-        this.role = role;
+        this.types = types;
+        this.roles = roles;
     }
-
 
     public Long getId() {
         return id;
@@ -97,19 +102,19 @@ public class User {
         this.password = password;
     }
 
-    public TypeEnum getType() {
-        return type;
+    public Set<Type> getTypes() {
+        return types;
     }
 
-    public void setType(TypeEnum type) {
-        this.type = type;
+    public void setTypes(Set<Type> types) {
+        this.types = types;
     }
 
-    public RoleEnum getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(RoleEnum role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

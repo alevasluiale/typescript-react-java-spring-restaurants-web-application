@@ -1,9 +1,8 @@
 package com.toptal.fooddelivery.model;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 @Entity
 @Table(name="orders")
@@ -13,7 +12,12 @@ public class Order {
     @Column(name="order_id")
     private Long id;
 
-    @OneToMany(mappedBy="order")
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(
+            name="ordered_meals",
+            joinColumns = @JoinColumn(name="order_id"),
+            inverseJoinColumns = @JoinColumn(name="meal_id")
+    )
     private Set<Meal> meals;
 
     private Date date;
@@ -21,28 +25,22 @@ public class Order {
     @Column(name="total_amount")
     private double totalAmount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_id",referencedColumnName = "status_id")
-    private Status status;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="Order_Status",
+            joinColumns = {@JoinColumn(name="order_id")},
+            inverseJoinColumns = {@JoinColumn(name="status_id")})
+    private Set<Status> statuses;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="restaurant_id",referencedColumnName = "restaurant_id")
-    private Restaurant restaurant;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="Order_Restaurant",
+            joinColumns = {@JoinColumn(name="order_id")},
+            inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
+    private Set<Restaurant> restaurants;
 
-    @OneToMany(mappedBy = "status")
-    private Set<OrderStatus> statuses = new HashSet<OrderStatus>();
 
     public Order() {}
 
-    public Order(Long id, Set<Meal> meals, Date date, double totalAmount, Status status, Restaurant restaurant, Set<OrderStatus> statuses) {
-        this.id = id;
-        this.meals = meals;
-        this.date = date;
-        this.totalAmount = totalAmount;
-        this.status = status;
-        this.restaurant = restaurant;
-        this.statuses = statuses;
-    }
+
 
     public Long getId() {
         return id;
@@ -50,6 +48,31 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Order(Long id, Set<Meal> meals, Date date, double totalAmount, Set<Status> statuses, Set<Restaurant> restaurants) {
+        this.id = id;
+        this.meals = meals;
+        this.date = date;
+        this.totalAmount = totalAmount;
+        this.statuses = statuses;
+        this.restaurants = restaurants;
+    }
+
+    public Set<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(Set<Status> statuses) {
+        this.statuses = statuses;
+    }
+
+    public Set<Restaurant> getRestaurants() {
+        return restaurants;
+    }
+
+    public void setRestaurants(Set<Restaurant> restaurants) {
+        this.restaurants = restaurants;
     }
 
     public Set<Meal> getMeals() {
@@ -76,27 +99,5 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    public Set<OrderStatus> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(Set<OrderStatus> statuses) {
-        this.statuses = statuses;
-    }
 }

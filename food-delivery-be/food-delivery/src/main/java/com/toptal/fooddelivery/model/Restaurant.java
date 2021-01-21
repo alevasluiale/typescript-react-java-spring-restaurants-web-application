@@ -20,8 +20,6 @@ public class Restaurant {
     @Size(max = 250)
     private String description;
 
-    @OneToOne(mappedBy = "restaurant")
-    private Order order;
 
     public Restaurant() {}
 
