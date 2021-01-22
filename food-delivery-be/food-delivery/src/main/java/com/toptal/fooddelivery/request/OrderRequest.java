@@ -5,30 +5,42 @@ import com.toptal.fooddelivery.model.Restaurant;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 public class OrderRequest {
 
-    private Set<Meal> meals;
+    private List<MealRequest> meals;
     private Date date;
-    private double totalAmount;
     private Restaurant restaurant;
-
+    private double amount;
     public OrderRequest() {
     }
 
-    public OrderRequest(Set<Meal> meals, Date date, double totalAmount, Restaurant restaurant) {
+    public OrderRequest(List<MealRequest> meals, Date date, double totalAmount, Restaurant restaurant) {
         this.meals = meals;
         this.date = date;
-        this.totalAmount = totalAmount;
         this.restaurant = restaurant;
     }
 
-    public Set<Meal> getMeals() {
+    public OrderRequest(List<MealRequest> meals, Date date, Restaurant restaurant, double amount) {
+        this.meals = meals;
+        this.date = date;
+        this.restaurant = restaurant;
+        this.amount = amount;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public List<MealRequest> getMeals() {
         return meals;
     }
 
-    public void setMeals(Set<Meal> meals) {
+    public void setMeals(List<MealRequest> meals) {
         this.meals = meals;
     }
 
@@ -38,14 +50,6 @@ public class OrderRequest {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
     public Restaurant getRestaurant() {

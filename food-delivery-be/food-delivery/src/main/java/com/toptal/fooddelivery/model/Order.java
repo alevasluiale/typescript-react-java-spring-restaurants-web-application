@@ -12,14 +12,6 @@ public class Order {
     @Column(name="order_id")
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
-    @JoinTable(
-            name="ordered_meals",
-            joinColumns = @JoinColumn(name="order_id"),
-            inverseJoinColumns = @JoinColumn(name="meal_id")
-    )
-    private Set<Meal> meals;
-
     private Date date;
 
     @Column(name="total_amount")
@@ -35,6 +27,9 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private Set<OrderStatus> orderStatuses = new HashSet<OrderStatus>();
 
+    @OneToMany(mappedBy = "order")
+    private Set<OrderMeal> orderMeals = new HashSet<>();
+
     public Order() {}
 
 
@@ -47,9 +42,9 @@ public class Order {
         this.id = id;
     }
 
-    public Order(Long id, Set<Meal> meals, Date date, double totalAmount, Set<Restaurant> restaurants,Set<OrderStatus> orderStatuses) {
+    public Order(Long id, Set<OrderMeal> orderMeals, Date date, double totalAmount, Set<Restaurant> restaurants,Set<OrderStatus> orderStatuses) {
         this.id = id;
-        this.meals = meals;
+        this.orderMeals = orderMeals;
         this.date = date;
         this.totalAmount = totalAmount;
         this.restaurants = restaurants;
@@ -72,12 +67,12 @@ public class Order {
         this.restaurants = restaurants;
     }
 
-    public Set<Meal> getMeals() {
-        return meals;
+    public Set<OrderMeal> getOrderMeals() {
+        return orderMeals;
     }
 
-    public void setMeals(Set<Meal> meals) {
-        this.meals = meals;
+    public void setOrderMeals(Set<OrderMeal> orderMeals) {
+        this.orderMeals = orderMeals;
     }
 
     public Date getDate() {
