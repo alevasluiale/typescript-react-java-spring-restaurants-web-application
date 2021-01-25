@@ -1,5 +1,7 @@
 package com.toptal.fooddelivery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -10,9 +12,11 @@ public class OrderStatus implements Serializable {
     @EmbeddedId
     private OrderStatusPK id = new OrderStatusPK();
 
+
     @ManyToOne
     @MapsId("order_id")
     @JoinColumn(name="order_id")
+    @JsonIgnore
     private Order order;
 
     @ManyToOne

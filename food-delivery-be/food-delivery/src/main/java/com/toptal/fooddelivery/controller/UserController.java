@@ -56,11 +56,11 @@ public class UserController {
 
 
         Set<Role> roles = new HashSet<Role>();
-        if(signUpRequest.getRole().equals(RoleEnum.ROLE_USER)
+        if(signUpRequest.getRole().equals(RoleEnum.ROLE_USER.name())
                 || signUpRequest.getRole().isEmpty()
                 || signUpRequest.getRole().isBlank()) roles.add(new Role(RoleEnum.ROLE_USER));
-        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER)) roles.add(new Role(RoleEnum.ROLE_OWNER));
-        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_ADMIN)) {
+        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER.name())) roles.add(new Role(RoleEnum.ROLE_OWNER));
+        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_ADMIN.name())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin user cannot be created by other admin"));
         }
         else {
@@ -81,7 +81,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@RequestParam(name="userId") Long userId) {
         if(userRepository.existsById(userId)) {
             User toBeDeleted = userRepository.getOne(userId);
-            if(toBeDeleted.getRoles().iterator().next().equals(RoleEnum.ROLE_ADMIN)) {
+            if(toBeDeleted.getRoles().iterator().next().getName().equals(RoleEnum.ROLE_ADMIN)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin users cannot be deleted"));
             }
 
@@ -96,23 +96,23 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest,@RequestParam(name="userId") Long userId) {
 
-        if(userRepository.existsById(userId)) {
-            User userToBeUpdated = userRepository.getOne(userId);
-            if(userToBeUpdated.getRoles().iterator().next().equals(RoleEnum.ROLE_ADMIN)) {
+        if(userRepository.existsById(updateUserRequest.getId())) {
+            User userToBeUpdated = userRepository.getOne(updateUserRequest.getId());
+            if(userToBeUpdated.getRoles().iterator().next().getName().equals(RoleEnum.ROLE_ADMIN)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin users cannot be updated"));
             }
 
 
-            User adminUser = userRepository.getOne(updateUserRequest.getRequestingUserid());
-            if(!adminUser.getRoles().iterator().next().equals(RoleEnum.ROLE_ADMIN)) {
+            User adminUser = userRepository.getOne(userId);
+            if(!adminUser.getRoles().iterator().next().getName().equals(RoleEnum.ROLE_ADMIN)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Requesting user is not admin"));
             }
 
             if(updateUserRequest.getRole() != null) {
                 Set<Role> newRoles = new HashSet<Role>();
-                if(updateUserRequest.getRole().equals(RoleEnum.ROLE_USER)) newRoles.add(new Role(RoleEnum.ROLE_USER));
-                else if(updateUserRequest.getRole().equals(RoleEnum.ROLE_OWNER)) newRoles.add(new Role(RoleEnum.ROLE_OWNER));
-                else if(updateUserRequest.getRole().equals(RoleEnum.ROLE_ADMIN)) {
+                if(updateUserRequest.getRole().equals(RoleEnum.ROLE_USER.name())) newRoles.add(new Role(RoleEnum.ROLE_USER));
+                else if(updateUserRequest.getRole().equals(RoleEnum.ROLE_OWNER.name())) newRoles.add(new Role(RoleEnum.ROLE_OWNER));
+                else if(updateUserRequest.getRole().equals(RoleEnum.ROLE_ADMIN.name())) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin user cannot be created by other admin"));
                 }
                 else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Error: Role is invalid"));

@@ -15,16 +15,16 @@ public class UpdateUserRequest {
     private String role;
 
     @NotNull
-    private Long requestingUserid;
+    private Long id;
 
     private String password;
 
-    public Long getRequestingUserid() {
-        return requestingUserid;
+    public Long getId() {
+        return id;
     }
 
-    public void setRequestingUserid(Long requestingUserid) {
-        this.requestingUserid = requestingUserid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

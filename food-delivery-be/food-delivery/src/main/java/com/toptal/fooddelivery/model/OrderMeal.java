@@ -1,5 +1,7 @@
 package com.toptal.fooddelivery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -12,6 +14,7 @@ public class OrderMeal implements Serializable {
     @ManyToOne
     @MapsId("order_id")
     @JoinColumn(name="order_id")
+    @JsonIgnore
     private Order order;
 
     @ManyToOne

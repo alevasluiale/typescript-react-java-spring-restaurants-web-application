@@ -1,5 +1,6 @@
 package com.toptal.fooddelivery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.toptal.fooddelivery.enums.StatusEnum;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Status {
     private StatusEnum name;
 
     @OneToMany(mappedBy ="status")
+    @JsonIgnore
     private Set<OrderStatus> orders;
     public Status() {}
 

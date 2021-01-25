@@ -8,6 +8,7 @@ import com.toptal.fooddelivery.request.MealRequest;
 import com.toptal.fooddelivery.request.OrderRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
+import com.toptal.fooddelivery.response.OrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,8 +32,8 @@ public class OrderController {
     @Autowired
     private StatusRepository statusRepository;
     @GetMapping("/getAll")
-    List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    List<OrderResponse> getAllOrders() {
+        return orderRepository.findBy();
     }
 
     @PostMapping("/addOrder")
