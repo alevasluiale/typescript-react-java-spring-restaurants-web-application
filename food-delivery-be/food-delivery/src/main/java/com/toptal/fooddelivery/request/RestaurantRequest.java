@@ -1,12 +1,26 @@
 package com.toptal.fooddelivery.request;
 
+import com.toptal.fooddelivery.model.Meal;
+
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.Set;
 
 public class RestaurantRequest {
 
     private String name;
 
     private String description;
+
+    private List<Long> mealsIds;
+
+    public List<Long> getMealsIds() {
+        return mealsIds;
+    }
+
+    public void setMealsIds(List<Long> mealsIds) {
+        this.mealsIds = mealsIds;
+    }
 
     public String getName() {
         return name;

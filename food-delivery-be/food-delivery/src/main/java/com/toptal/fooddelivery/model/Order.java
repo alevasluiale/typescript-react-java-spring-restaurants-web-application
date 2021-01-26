@@ -19,7 +19,7 @@ public class Order {
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
     @JoinTable(name ="order_restaurant",
-            joinColumns = {@JoinColumn(name="user_id")},
+            joinColumns = {@JoinColumn(name="order_id")},
             inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
     private Set<Restaurant> restaurants = new HashSet<Restaurant>();
 

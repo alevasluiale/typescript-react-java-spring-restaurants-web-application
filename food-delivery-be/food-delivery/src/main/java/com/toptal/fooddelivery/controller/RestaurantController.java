@@ -1,7 +1,9 @@
 package com.toptal.fooddelivery.controller;
 
 
+import com.toptal.fooddelivery.model.Meal;
 import com.toptal.fooddelivery.model.Restaurant;
+import com.toptal.fooddelivery.repository.MealRepository;
 import com.toptal.fooddelivery.repository.RestaurantRepository;
 import com.toptal.fooddelivery.request.RestaurantRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
@@ -12,7 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -20,7 +24,8 @@ import java.util.List;
 public class RestaurantController {
     @Autowired
     private RestaurantRepository restaurantRepository;
-
+    @Autowired
+    private MealRepository mealRepository;
     @GetMapping("/getAll")
     List<Restaurant> getAllRestaurants() {
         return restaurantRepository.findAll();
@@ -38,6 +43,19 @@ public class RestaurantController {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantRequest.getName());
         restaurant.setDescription(restaurantRequest.getDescription());
+
+        Set<Meal> meals = new HashSet<>();
+        if(restaurantRequest.getMealsIds() != null && restaurantRequest.getMealsIds().size() > 0) {
+            for(Long mealId : restaurantRequest.getMealsIds()) {
+                if(!mealRepository.existsById(mealId)) {
+                    return ResponseEntity
+                            .badRequest()
+                            .body(new MessageResponse("Error: Meal with id "+mealId.toString()+"doesn't exist!"));
+                }
+                meals.add(mealRepository.getOne(mealId));
+            }
+        }
+        restaurant.setMeals(meals);
 
         restaurantRepository.save(restaurant);
 
@@ -62,6 +80,18 @@ public class RestaurantController {
             restaurant.setDescription(restaurantRequest.getDescription());
         }
 
+        if(restaurantRequest.getMealsIds() != null && restaurantRequest.getMealsIds().size() > 0) {
+            Set<Meal> meals = new HashSet<>();
+            for(Long mealId : restaurantRequest.getMealsIds()) {
+                if(!mealRepository.existsById(mealId)) {
+                    return ResponseEntity
+                            .badRequest()
+                            .body(new MessageResponse("Error: Meal with id "+mealId.toString()+"doesn't exist!"));
+                }
+                meals.add(mealRepository.getOne(mealId));
+            }
+            restaurant.setMeals(meals);
+        }
         restaurantRepository.save(restaurant);
 
         return ResponseEntity.ok("Restaurant updated successfully");
@@ -79,4 +109,5 @@ public class RestaurantController {
         restaurantRepository.deleteById(restaurantId);
         return ResponseEntity.ok("Restaurant deleted successfully");
     }
+
 }

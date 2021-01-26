@@ -37,7 +37,6 @@ class MealsService {
   }
 
   deleteMeal(id:number) {
-    console.log(id)
     return axios
       .put(API_URL+'deleteMeal',{},{
         params: {

@@ -1,5 +1,8 @@
+import { Meal } from "./Meal";
+
 export interface Restaurant {
   name?: string,
   description?: string,
-  id?: number
+  id?: number,
+  meals?: Array<Meal>
 }

@@ -47,7 +47,6 @@ const ModifyModal: React.FC<{
   setModify: () => void
   modifyMeal: (values:Meal) => void
 }>=({modify,setModify,modifyMeal}) => {
-  console.log(modify)
   return (
     <Modal
         title={'Modify meal '+ modify.name}
@@ -198,7 +197,6 @@ const Meals: React.FC<{
                 <Typography variant="body2" style={{ cursor: 'pointer' }}>
                   <Button className="mr-4" shape="round" type="primary" style={{color: 'black'}} danger onClick={e => deleteMeal(meal.id ?? 0)}>Remove</Button>
                   <Button className="mr-4" shape="round" type="primary" onClick={e => {
-                    console.log(meal)
                     setModify({
                     visible: true,
                     id:meal.id ?? 0,

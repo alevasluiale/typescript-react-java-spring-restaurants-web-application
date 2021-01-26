@@ -1,7 +1,7 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import "./style/index.css";
 import AuthService from "./services/auth.service";
-import {useMachine} from '@xstate/react';
+import { useMachine } from '@xstate/react';
 import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/home.component";
@@ -13,11 +13,11 @@ import { createAppStateMachine } from "./models/AppStateMachine";
 import Restaurants from "./components/restaurants.component";
 import { Restaurant } from "./models/Restaurant";
 
-export const App:  React.FC = () => {
-  
-  const [current,send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
-  
-  const [userIdForZones,setUserIdForZones] = useState({
+export const App: React.FC = () => {
+
+  const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
+
+  const [userIdForZones, setUserIdForZones] = useState({
     id: 0,
     username: ''
   })
@@ -30,122 +30,130 @@ export const App:  React.FC = () => {
     localStorage.removeItem('userIdForZone')
   }
 
-    return (
+  return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">
-        <span style={{cursor: 'pointer'}} className="navbar-brand unselectable" onClick={e=>{
+        <span style={{ cursor: 'pointer' }} className="navbar-brand unselectable" onClick={e => {
           clearUserForZone()
-          send({type:'HOME'})}}>
+          send({ type: 'HOME' })
+        }}>
           TopTal
         </span>
-            <div className="navbar-nav mr-auto  unselectable">
-            
-						{current.context.currentUser && 
-              (<li className="nav-item" onClick={e => {
+        <div className="navbar-nav mr-auto  unselectable">
+
+          {current.context.currentUser &&
+            (<li className="nav-item" onClick={e => {
+              clearUserForZone()
+              send({ type: 'RESTAURANTS' })
+            }}>
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                 clearUserForZone()
-                send({type: 'RESTAURANTS'})}}>
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" onClick={e=>{
-                  clearUserForZone()
-                  // send({type: 'OPEN_ZONES_FOR_USER',payload:{
-                  //   id: current.context.currentUser?.id ?? 0
-									// }})
-									}}>
-                  Restaurants
+                // send({type: 'OPEN_ZONES_FOR_USER',payload:{
+                //   id: current.context.currentUser?.id ?? 0
+                // }})
+              }}>
+                Restaurants
                 </span>
-              </li>
+            </li>
             )}
 
-            {current.context.currentUser && 
-              (<li className="nav-item" onClick={e => {
+          {current.context.currentUser &&
+            (<li className="nav-item" onClick={e => {
+              clearUserForZone()
+              send({ type: 'MEALS' })
+            }}>
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                 clearUserForZone()
-                send({type: 'MEALS'})}}>
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" onClick={e=>{
-                  clearUserForZone()
-                  // send({type: 'OPEN_ZONES_FOR_USER',payload:{
-                  //   id: current.context.currentUser?.id ?? 0
-									// }})
-									}}>
-                  Meals
+                // send({type: 'OPEN_ZONES_FOR_USER',payload:{
+                //   id: current.context.currentUser?.id ?? 0
+                // }})
+              }}>
+                Meals
                 </span>
-              </li>
+            </li>
             )}
 
 
-            {current.context.currentUser && 
-              ( current.context.currentUser.roles.includes("ROLE_USER_MANAGER") ||
-              current.context.currentUser.roles.includes("ROLE_ADMIN") ) && (
+          {current.context.currentUser &&
+            (current.context.currentUser.roles.includes("ROLE_USER_MANAGER") ||
+              current.context.currentUser.roles.includes("ROLE_ADMIN")) && (
               <li className="nav-item">
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" onClick={e=>{
+                <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                   clearUserForZone()
-                  send({type:'USERS'})}}>
+                  send({ type: 'USERS' })
+                }}>
                   Users
                 </span>
               </li>
             )}
-          </div>
+        </div>
 
-          {current.context.currentUser ? (
+        {current.context.currentUser ? (
+          <div className="navbar-nav ml-auto unselectable">
+            <li className="nav-item">
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
+                {current.context.currentUser.username}
+              </span>
+            </li>
+            <li className="nav-item">
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
+                clearUserForZone()
+                send({ type: 'LOG_OUT' })
+              }}>
+                LogOut
+                </span>
+            </li>
+          </div>
+        ) : (
             <div className="navbar-nav ml-auto unselectable">
               <li className="nav-item">
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable">
-                  {current.context.currentUser.username}
-                </span>
-              </li>
-              <li className="nav-item">
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" onClick={ e => {
-                  clearUserForZone()
-                  send({type: 'LOG_OUT'})}}>
-                  LogOut
-                </span>
-              </li>
-            </div>
-          ) : (
-            <div className="navbar-nav ml-auto unselectable">
-              <li className="nav-item">
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" 
-                  onClick={e=> {
+                <span style={{ cursor: 'pointer' }} className="nav-link unselectable"
+                  onClick={e => {
                     clearUserForZone()
                     send({
-                    type: 'LOGIN_PAGE'
-                    })}}>
+                      type: 'LOGIN_PAGE'
+                    })
+                  }}>
                   Login
                   </span>
               </li>
 
               <li className="nav-item">
-                <span style={{cursor: 'pointer'}} className="nav-link unselectable" onClick={e=>{send({
-                  type: 'SIGN_UP'
-                })}}>
+                <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
+                  send({
+                    type: 'SIGN_UP'
+                  })
+                }}>
                   Sign Up
                 </span>
               </li>
             </div>
           )}
-        </nav>
+      </nav>
 
-  
+
       <div className="container py-4">
-        <Match state={['home','signed_in']} current={current}>
-          <Home/>
+        <Match state={['home', 'signed_in']} current={current}>
+          <Home />
         </Match>
 
         <Match state={'login_page'} current={current}>
           <Login onLogin={
-            (userName: string,password:string) => {
+            (userName: string, password: string) => {
               send({
-              type:'LOGIN',
-              payload: {
-                userName: userName,
-                password: password
-              }
-            })
+                type: 'LOGIN',
+                payload: {
+                  userName: userName,
+                  password: password
+                }
+              })
             }
-          }/>
+          } />
         </Match>
 
         <Match state={"sign_up"} current={current}>
           <Register
-            onRegister={(username: string,email:string,password:string) => 
+            onRegister={(username: string, email: string, password: string) =>
               send({
                 type: 'REGISTER',
                 payload: {
@@ -158,37 +166,40 @@ export const App:  React.FC = () => {
         </Match>
 
         <Match state={"meals"} current={current}>
-          <Meals meals={current.context.meals} 
-					deleteMeal={ (id:number) => {
-						send({type:'DELETE_MEAL',payload:{id:id}})
-					}}
-					modifyMeal={  (meal:Meal) => {
-						send({type: 'MODIFY_MEAL',payload: {meal:meal }})
-					}}
-					addMeal={  (meal:Meal) => {
-							send({type: 'ADD_MEAL',payload: {meal:meal }})
-						}
-					}>
-					</Meals>      
+          <Meals meals={current.context.meals}
+            deleteMeal={(id: number) => {
+              send({ type: 'DELETE_MEAL', payload: { id: id } })
+            }}
+            modifyMeal={(meal: Meal) => {
+              send({ type: 'MODIFY_MEAL', payload: { meal: meal } })
+            }}
+            addMeal={(meal: Meal) => {
+              send({ type: 'ADD_MEAL', payload: { meal: meal } })
+            }
+            }>
+          </Meals>
         </Match>
 
-				<Match state={"restaurants"} current={current}>
-          <Restaurants restaurants={current.context.restaurants} 
-					deleteRestaurant={ (id:number) => {
-						send({type:'DELETE_RESTAURANT',payload:{restaurantId:id}})
-					}}
-					modifyRestaurant={  (restaurant:Restaurant) => {
-						send({type: 'MODIFY_RESTAURANT',payload: {restaurant:restaurant }})
-					}}
-					addRestaurant={  (restaurant:Restaurant) => {
-							send({type: 'ADD_RESTAURANT',payload: {restaurant:restaurant }})
-						}
-					}>
-					</Restaurants>      
+        <Match state={"restaurants"} current={current}>
+          <Restaurants
+            restaurants={current.context.restaurants}
+            meals={current.context.meals}
+            isRegularUser={current.context.currentUser?.roles[0] === "ROLE_USER"}
+            deleteRestaurant={(id: number) => {
+              send({ type: 'DELETE_RESTAURANT', payload: { restaurantId: id } })
+            }}
+            modifyRestaurant={(restaurant: Restaurant, mealsIds: Array<Number>) => {
+              send({ type: 'MODIFY_RESTAURANT', payload: { restaurant: restaurant, mealsIds: mealsIds } })
+            }}
+            addRestaurant={(restaurant: Restaurant, mealsIds: Array<Number>) => {
+              send({ type: 'ADD_RESTAURANT', payload: { restaurant: restaurant, mealsIds: mealsIds } })
+            }
+            }>
+          </Restaurants>
         </Match>
 
         <Match state={"users"} current={current}>
-          <Users 
+          <Users
             users={current.context.users}
             deleteUser={(id: number) => {
               send({
@@ -206,12 +217,12 @@ export const App:  React.FC = () => {
               type: 'ADD_USER',
               payload: values
             })}
-            openZonesForUser={(id: number,username:string) => {
+            openZonesForUser={(id: number, username: string) => {
               setUserIdForZones({
-                id:id,
+                id: id,
                 username: username
               })
-              localStorage.setItem('userIdForZone',id.toString())
+              localStorage.setItem('userIdForZone', id.toString())
               // send({
               //   type: 'OPEN_ZONES_FOR_USER',
               //   payload: {
@@ -224,7 +235,7 @@ export const App:  React.FC = () => {
 
       </div>
     </div>
-    )
+  )
 }
 
 export default App;

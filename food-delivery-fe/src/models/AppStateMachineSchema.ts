@@ -43,12 +43,14 @@ export type AddRestaurantEvent = {
   type: 'ADD_RESTAURANT',
   payload: {
     restaurant: Restaurant
+    mealsIds: Array<Number>
   }
 }
 export type ModifyRestaurantEvent = {
   type: 'MODIFY_RESTAURANT',
   payload: {
     restaurant: Restaurant
+    mealsIds: Array<Number>
   }
 }
 export type DeleteRestaurantEvent = {

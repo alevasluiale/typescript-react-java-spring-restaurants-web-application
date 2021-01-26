@@ -74,4 +74,10 @@ public class Restaurant {
         this.description = description;
     }
 
+    public void addMeal(Meal meal) {
+        meals.add(meal);
+    }
+    public void removeMeal(Meal meal) {
+        meals.remove(meal);
+    }
 }

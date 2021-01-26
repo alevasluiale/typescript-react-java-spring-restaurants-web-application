@@ -14,7 +14,6 @@ class UserService {
   }
 
   deleteUser(id:number) {
-    console.log(id)
     return axios.put(API_URL + 'deleteUser',{}, { 
       params: {
         userId: id

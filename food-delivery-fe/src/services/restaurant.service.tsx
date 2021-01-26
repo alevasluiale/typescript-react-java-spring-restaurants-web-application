@@ -12,20 +12,20 @@ class RestaurantService {
       })
   }
 
-  addRestaurant(restaurant: Restaurant) {
+  addRestaurant(restaurant: Restaurant,mealsIds:Array<Number>) {
     const name = restaurant.name
     const description = restaurant.description
     return axios
-      .post(API_URL+'addRestaurant',{name,description},{
+      .post(API_URL+'addRestaurant',{name,description,mealsIds},{
         headers: authHeader()
       })
   }
 
-  modifyRestaurant(restaurant: Restaurant) {
+  modifyRestaurant(restaurant: Restaurant,mealsIds:Array<Number>) {
     const name = restaurant.name
     const description = restaurant.description
     return axios
-      .post(API_URL+'updateRestaurant',{name,description},{
+      .post(API_URL+'updateRestaurant',{name,description,mealsIds},{
         params: {
           restaurantId: restaurant.id
         },
@@ -34,7 +34,6 @@ class RestaurantService {
   }
 
   deleteRestaurant(id:number) {
-    console.log(id)
     return axios
       .put(API_URL+'deleteRestaurant',{},{
         params: {
