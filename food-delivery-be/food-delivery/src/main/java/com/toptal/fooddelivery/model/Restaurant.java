@@ -3,6 +3,7 @@ package com.toptal.fooddelivery.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Entity
 @Table(	name = "restaurants")
@@ -20,6 +21,11 @@ public class Restaurant {
     @Size(max = 250)
     private String description;
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="Restaurant_Meal",
+            joinColumns = {@JoinColumn(name="restaurant_id")},
+            inverseJoinColumns = {@JoinColumn(name="meal_id")})
+    private Set<Meal> meals;
 
     public Restaurant() {}
 
@@ -27,6 +33,21 @@ public class Restaurant {
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    public Restaurant(Long id, @NotBlank @Size(max = 100) String name, @NotBlank @Size(max = 250) String description, Set<Meal> meals) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.meals = meals;
+    }
+
+    public Set<Meal> getMeals() {
+        return meals;
+    }
+
+    public void setMeals(Set<Meal> meals) {
+        this.meals = meals;
     }
 
     public Long getId() {

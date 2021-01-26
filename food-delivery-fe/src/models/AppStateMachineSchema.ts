@@ -1,11 +1,13 @@
 import { ModifyUserProps } from "../components/users.component";
 import { Meal } from "./Meal";
+import { Restaurant } from "./Restaurant";
 import { User } from "./User";
 import { UserInfo } from "./UserInfo";
 
 export interface AppStateMachineContext {
   currentUser?: User
   meals?: [Meal]
+  restaurants?: [Restaurant]
   users?: [UserInfo]
 }
 
@@ -19,22 +21,42 @@ export interface AppStateMachineSchema {
     login_initiated: {}
     sign_up: {} // sign up page
     register_user: {}
+    restaurants: {}
+    restaurants_fetching: {}
+    restaurants_add_restaurant: {}
+    restaurants_modify_restaurant: {}
+    restaurants_delete_restaurant: {}
     meals: {}
     meals_fetching: {}
     meals_add_meal: {}
     meals_modify_meal:{}
     meals_delete_meal:{}
-    meals_error: {}
-    users_fetching: {}
     users: {}
-    users_error: {}
+    users_fetching: {}
     users_delete_user:{}
     users_modify_user:{}
     users_add_user:{}
   },
   EventObject: {}
 }
-
+export type AddRestaurantEvent = {
+  type: 'ADD_RESTAURANT',
+  payload: {
+    restaurant: Restaurant
+  }
+}
+export type ModifyRestaurantEvent = {
+  type: 'MODIFY_RESTAURANT',
+  payload: {
+    restaurant: Restaurant
+  }
+}
+export type DeleteRestaurantEvent = {
+  type: 'DELETE_RESTAURANT',
+  payload: {
+    restaurantId: number
+  }
+}
 export type AddUserEvent = {
   type: 'ADD_USER',
   payload: ModifyUserProps
@@ -75,12 +97,6 @@ export type ModifyMealEvent = {
     meal: Meal
   }
 }
-export type OpenZonesForUserEvent = {
-  type: 'OPEN_ZONES_FOR_USER';
-  payload: {
-    id: number
-  }
-}
 export type LoginEvent = {
   type: 'LOGIN';
   payload: {
@@ -89,7 +105,8 @@ export type LoginEvent = {
   }
 }
 export type AppStateMachineEvent = AddMealEvent | LoginEvent 
-  | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent | OpenZonesForUserEvent
+  | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent 
+  | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent
   | {type: 'SIGNED_IN'}
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}
@@ -98,4 +115,6 @@ export type AppStateMachineEvent = AddMealEvent | LoginEvent
   | {type: 'SIGN_UP'}
   | {type: 'USERS'}
   | {type: 'ADMIN_PANEL'}
+  | {type: 'RESTAURANTS'}
+  | {type: 'ORDERS'}
   

@@ -8,7 +8,6 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import { Meal } from "../models/Meal";
 import {Formik,Form,Field,ErrorMessage} from 'formik';
 import * as Yup from 'yup';
-import authService from "../services/auth.service";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,8 +103,8 @@ const ModifyModal: React.FC<{
 const Meals: React.FC<{
   meals?: [Meal]
    deleteMeal: (id:number) => void
-   modifyMeal: (values:Meal) => void
-   addMeal: (values:Meal) => void
+   modifyMeal: (meal:Meal) => void
+   addMeal: (meal:Meal) => void
   }> = ({meals,deleteMeal,modifyMeal,addMeal}) => {
 
   const classes = useStyles();
