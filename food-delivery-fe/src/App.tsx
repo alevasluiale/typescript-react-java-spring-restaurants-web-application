@@ -14,6 +14,8 @@ import { AddMealEvent, AddUserEvent, AppStateMachineContext, AppStateMachineEven
 import userService from "./services/user.service";
 import Users, { ModifyUserProps } from "./components/users.component";
 import authService from "./services/auth.service";
+import Meals from "./components/meals.component";
+import { Meal } from "./models/Meal";
 
 export const App:  React.FC = () => {
   
@@ -142,7 +144,20 @@ export const App:  React.FC = () => {
               })}
           />
         </Match>
-        
+        <Match state={"meals"} current={current}>
+          <Meals meals={current.context.meals} 
+					deleteMeal={ (id:number) => {
+						send({type:'DELETE_MEAL',payload:{id:id}})
+					}}
+					modifyMeal={  (meal:Meal) => {
+						send({type: 'MODIFY_MEAL',payload: {meal:meal }})
+					}}
+					addMeal={  (meal:Meal) => {
+							send({type: 'ADD_MEAL',payload: {meal:meal }})
+						}
+					}>
+					</Meals>      
+        </Match>
         <Match state={"users"} current={current}>
           <Users 
             users={current.context.users}
@@ -301,9 +316,9 @@ const createAppStateMachine = (currentUser?: User ) =>
         src: 'fetchMeals',
         onDone: {
           target: 'meals',
-          // actions: assign({
-          //   meals: (context,event) => event.data.data
-          // })
+          actions: assign({
+            meals: (context,event) => event.data.data
+          })
         },
         onError: {
           target: 'home',
@@ -313,15 +328,15 @@ const createAppStateMachine = (currentUser?: User ) =>
     },
     meals: {
       on: {
-        ADD_TIMEZONE: 'meals_add_meal',
+        ADD_MEAL: 'meals_add_meal',
         LOG_OUT: {
           target: 'home',
           actions: 'logOut'
         },
         HOME: 'home',
         USERS: 'users_fetching',
-        MODIFY_TIMEZONE: 'meals_modify_meal',
-        DELETE_TIMEZONE: 'meals_delete_meal'
+        MODIFY_MEAL: 'meals_modify_meal',
+        DELETE_MEAL: 'meals_delete_meal'
       }
     },
     meals_add_meal: {
@@ -373,7 +388,7 @@ const createAppStateMachine = (currentUser?: User ) =>
           target: 'home',
           actions: 'logOut'
         },
-        TIMEZONES: 'meals_fetching'
+        MEALS: 'meals_fetching'
       }
     },
     users_fetching: {
@@ -472,13 +487,13 @@ const createAppStateMachine = (currentUser?: User ) =>
       return AuthService.login((event as LoginEvent).payload.userName,(event as LoginEvent).payload.password);
     },
     fetchMeals: (context,event) => {
-      return MealsService.getMeals((event as OpenZonesForUserEvent).payload ? (event as OpenZonesForUserEvent).payload.id : ( localStorage.getItem('userIdForZone') ? Number(localStorage.getItem('userIdForZone')) : authService.getCurrentUserId()));
+      return MealsService.getMeals();
     },
     addMeal: (context,event) => {
-      return MealsService.addMeal((event as AddMealEvent).payload.name,(event as AddMealEvent).payload.meal,(event as AddMealEvent).payload.gmt,(event as AddMealEvent).payload.id);
+      return MealsService.addMeal((event as AddMealEvent).payload.meal);
     },
     modifyMeal:(context,event)=>{
-      return MealsService.modifyMeal((event as ModifyMealEvent).payload.name,(event as ModifyMealEvent).payload.meal,(event as ModifyMealEvent).payload.gmt,(event as ModifyMealEvent).payload.id);
+      return MealsService.modifyMeal((event as ModifyMealEvent).payload.meal);
     },
     deleteMeal:(contex,event)=> {
       return MealsService.deleteMeal((event as DeleteMealEvent).payload.id)

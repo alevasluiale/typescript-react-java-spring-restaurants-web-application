@@ -1,36 +1,36 @@
 import axios from "axios";
+import { Meal } from "../models/Meal";
 import authHeader from './auth-header';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/meals/`;
 
 class MealsService {
-  getMeals(userId: number) {
+  getMeals() {
     return axios
-      .get(API_URL+ 'get',{
-        params: {
-          userId: userId,
-        },
+      .get(API_URL+ 'getAll',{
         headers: authHeader() 
       })
   }
 
-  addMeal(name: String, zoneName: String,gmt: String,id:number) {
+  addMeal(meal: Meal) {
+    const name = meal.name
+    const description = meal.description
+    const price = meal.price
     return axios
-      .post(API_URL+'add',{name,zoneName,gmt},{
-
-        params: {
-          userId: id
-        },
+      .post(API_URL+'addMeal',{name,description,price},{
         headers: authHeader()
       })
   }
 
-  modifyMeal(name: String, zoneName: String,gmt: String,id: number) {
+  modifyMeal(meal: Meal) {
+    const name = meal.name
+    const description = meal.description
+    const price = meal.price
     return axios
-      .post(API_URL+'modify',{name,zoneName,gmt},{
+      .post(API_URL+'updateMeal',{name,description,price},{
 
         params: {
-          mealId: id
+          mealId: meal.id
         },
         headers: authHeader()
       })
@@ -39,7 +39,7 @@ class MealsService {
   deleteMeal(id:number) {
     console.log(id)
     return axios
-      .put(API_URL+'delete',{},{
+      .put(API_URL+'deleteMeal',{},{
         params: {
           mealId: id
         },

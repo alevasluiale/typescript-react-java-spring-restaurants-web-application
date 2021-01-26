@@ -69,7 +69,7 @@ public class RestaurantController {
 
     @PutMapping("/deleteRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
-    public ResponseEntity<?> updateRestaurant(@RequestParam(name="restaurantId") Long restaurantId) {
+    public ResponseEntity<?> deleteRestaurant(@RequestParam(name="restaurantId") Long restaurantId) {
         if (!restaurantRepository.existsById(restaurantId)) {
             return ResponseEntity
                     .badRequest()

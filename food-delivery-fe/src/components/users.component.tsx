@@ -83,7 +83,7 @@ const Users: React.FC<{
         onSubmit={(values)=> addUser(values)}
       >
         { props => (
-            <Form id="addForm" className="unselectable">
+            <Form id="addUserForm" className="unselectable">
               <Paper key="addUser" className={classes.paper}>
                 <Grid container spacing={2} className="pb-4 unselectable">
                   <Grid item className="my-auto">
@@ -127,7 +127,7 @@ const Users: React.FC<{
                     <Grid item className="mx-4 my-auto">
                       <Typography variant="subtitle1">
                         <Button
-                          form="addForm" key="submit" htmlType="submit"
+                          form="addUserForm" key="submit" htmlType="submit"
                           shape="round" type="primary" style={{background: 'green'}}>Add user</Button>
                       </Typography>
                     </Grid>
@@ -183,7 +183,7 @@ const Users: React.FC<{
           </Grid>
         </Grid>
       </Paper>))}
-      <Modal
+      {modify.visible && <Modal
         title={'Modify user '+ modify.name}
         visible={modify.visible}
         footer={[
@@ -197,7 +197,7 @@ const Users: React.FC<{
           })}>
               Cancel
           </Button>,
-          <Button type="primary" form="modifyForm" key="submit" htmlType="submit">
+          <Button type="primary" form="modifyUserForm" key="submit" htmlType="submit">
               Submit
           </Button>
           ]}
@@ -220,7 +220,7 @@ const Users: React.FC<{
           onSubmit={(values)=> modifyUser(values)}
         >
           { props => (
-            <Form id="modifyForm">
+            <Form id="modifyUserForm">
               <div className="form-group">
                 <label>Username</label>
                 <Field className="form-control mb-3" name="username"/>
@@ -252,7 +252,7 @@ const Users: React.FC<{
             </Form>
           )}
         </Formik>
-      </Modal>
+      </Modal>}
     </div>
   )
 }

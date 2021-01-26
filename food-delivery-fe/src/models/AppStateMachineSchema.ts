@@ -1,27 +1,29 @@
 import { ModifyUserProps } from "../components/users.component";
+import { Meal } from "./Meal";
 import { User } from "./User";
 import { UserInfo } from "./UserInfo";
 
 export interface AppStateMachineContext {
   currentUser?: User
+  meals?: [Meal]
   users?: [UserInfo]
 }
 
 export interface AppStateMachineSchema {
   context: AppStateMachineContext
   states: {
-    check_user_is_authenticated:{}
+    check_user_is_authenticated:{} //checks user is auth 
     home: {}
-    login_page: {}
+    login_page: {} // login page
     signed_in: {}
     login_initiated: {}
-    sign_up: {}
+    sign_up: {} // sign up page
+    register_user: {}
     meals: {}
     meals_fetching: {}
     meals_add_meal: {}
     meals_modify_meal:{}
     meals_delete_meal:{}
-    register_user: {}
     meals_error: {}
     users_fetching: {}
     users: {}
@@ -56,27 +58,21 @@ export type RegisterEvent = {
   }
 }
 export type AddMealEvent = {
-  type: 'ADD_TIMEZONE';
+  type: 'ADD_MEAL';
   payload: {
-    name: string
-    meal: string
-    gmt: string
-    id: number
+    meal: Meal
   }
 }
 export type DeleteMealEvent = {
-  type: 'DELETE_TIMEZONE';
+  type: 'DELETE_MEAL';
   payload: {
     id: number
   }
 }
 export type ModifyMealEvent = {
-  type: 'MODIFY_TIMEZONE';
+  type: 'MODIFY_MEAL';
   payload: {
-    name: string
-    meal: string
-    gmt: string
-    id: number
+    meal: Meal
   }
 }
 export type OpenZonesForUserEvent = {
@@ -98,7 +94,7 @@ export type AppStateMachineEvent = AddMealEvent | LoginEvent
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}
   | {type: 'LOG_OUT'}
-  | {type: 'TIMEZONES'}
+  | {type: 'MEALS'}
   | {type: 'SIGN_UP'}
   | {type: 'USERS'}
   | {type: 'ADMIN_PANEL'}
