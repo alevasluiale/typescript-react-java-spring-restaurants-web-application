@@ -48,8 +48,7 @@ const Users: React.FC<{
    deleteUser: (id:number) => void
    modifyUser: (values:ModifyUserProps) => void
    addUser: (values:ModifyUserProps) => void
-   openZonesForUser:(id:number,username: string) => void
-  }> = ({users,deleteUser,modifyUser,addUser,openZonesForUser}) => {
+  }> = ({users,deleteUser,modifyUser,addUser}) => {
 
   const classes = useStyles();
 
@@ -166,10 +165,6 @@ const Users: React.FC<{
                     role: user.roles[0].name,
                     password: ''
                     })}>Modify</Button>
-                  {
-                  authService.getCurrentUser().roles[0] === "ROLE_ADMIN" ?
-                  <Button shape="round" type="primary" style={{background: 'green'}} onClick={e => openZonesForUser(user.id,user.username)}>
-                    Zones</Button> : null }
                 </Typography>
               </Grid>
             </Grid>

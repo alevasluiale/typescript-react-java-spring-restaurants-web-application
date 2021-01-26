@@ -12,29 +12,19 @@ import { Meal } from "./models/Meal";
 import { createAppStateMachine } from "./models/AppStateMachine";
 import Restaurants from "./components/restaurants.component";
 import { Restaurant } from "./models/Restaurant";
+import Orders from "./components/orders.component";
+import { Order } from "./models/Order";
 
 export const App: React.FC = () => {
 
   const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
 
-  const [userIdForZones, setUserIdForZones] = useState({
-    id: 0,
-    username: ''
-  })
 
-  function clearUserForZone() {
-    setUserIdForZones({
-      id: 0,
-      username: ''
-    })
-    localStorage.removeItem('userIdForZone')
-  }
 
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">
         <span style={{ cursor: 'pointer' }} className="navbar-brand unselectable" onClick={e => {
-          clearUserForZone()
           send({ type: 'HOME' })
         }}>
           TopTal
@@ -43,15 +33,9 @@ export const App: React.FC = () => {
 
           {current.context.currentUser &&
             (<li className="nav-item" onClick={e => {
-              clearUserForZone()
               send({ type: 'RESTAURANTS' })
             }}>
-              <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-                clearUserForZone()
-                // send({type: 'OPEN_ZONES_FOR_USER',payload:{
-                //   id: current.context.currentUser?.id ?? 0
-                // }})
-              }}>
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
                 Restaurants
                 </span>
             </li>
@@ -59,15 +43,20 @@ export const App: React.FC = () => {
 
           {current.context.currentUser &&
             (<li className="nav-item" onClick={e => {
-              clearUserForZone()
+              send({ type: 'ORDERS' })
+            }}>
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
+                Orders
+                </span>
+            </li>
+            )}
+
+          {current.context.currentUser &&
+            current.context.currentUser.roles[0] !== "ROLE_USER" &&
+            (<li className="nav-item" onClick={e => {
               send({ type: 'MEALS' })
             }}>
-              <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-                clearUserForZone()
-                // send({type: 'OPEN_ZONES_FOR_USER',payload:{
-                //   id: current.context.currentUser?.id ?? 0
-                // }})
-              }}>
+              <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
                 Meals
                 </span>
             </li>
@@ -75,11 +64,9 @@ export const App: React.FC = () => {
 
 
           {current.context.currentUser &&
-            (current.context.currentUser.roles.includes("ROLE_USER_MANAGER") ||
-              current.context.currentUser.roles.includes("ROLE_ADMIN")) && (
+            current.context.currentUser.roles.includes("ROLE_ADMIN") && (
               <li className="nav-item">
                 <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-                  clearUserForZone()
                   send({ type: 'USERS' })
                 }}>
                   Users
@@ -97,7 +84,6 @@ export const App: React.FC = () => {
             </li>
             <li className="nav-item">
               <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-                clearUserForZone()
                 send({ type: 'LOG_OUT' })
               }}>
                 LogOut
@@ -109,7 +95,6 @@ export const App: React.FC = () => {
               <li className="nav-item">
                 <span style={{ cursor: 'pointer' }} className="nav-link unselectable"
                   onClick={e => {
-                    clearUserForZone()
                     send({
                       type: 'LOGIN_PAGE'
                     })
@@ -198,6 +183,21 @@ export const App: React.FC = () => {
           </Restaurants>
         </Match>
 
+        <Match state={"orders"} current={current}>
+          <Orders orders={current.context.orders}
+            deleteOrder={(id: number) => {
+              send({ type: 'DELETE_MEAL', payload: { id: id } })
+            }}
+            modifyOrder={(meal: Order) => {
+              send({ type: 'MODIFY_MEAL', payload: { meal: meal } })
+            }}
+            addOrder={(meal: Order) => {
+              send({ type: 'ADD_MEAL', payload: { meal: meal } })
+            }
+            }>
+          </Orders>
+        </Match>
+
         <Match state={"users"} current={current}>
           <Users
             users={current.context.users}
@@ -217,19 +217,6 @@ export const App: React.FC = () => {
               type: 'ADD_USER',
               payload: values
             })}
-            openZonesForUser={(id: number, username: string) => {
-              setUserIdForZones({
-                id: id,
-                username: username
-              })
-              localStorage.setItem('userIdForZone', id.toString())
-              // send({
-              //   type: 'OPEN_ZONES_FOR_USER',
-              //   payload: {
-              //     id: id
-              //   }
-              // })
-            }}
           />
         </Match>
 

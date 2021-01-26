@@ -1,5 +1,6 @@
 import { ModifyUserProps } from "../components/users.component";
 import { Meal } from "./Meal";
+import { Order } from "./Order";
 import { Restaurant } from "./Restaurant";
 import { User } from "./User";
 import { UserInfo } from "./UserInfo";
@@ -9,6 +10,7 @@ export interface AppStateMachineContext {
   meals?: [Meal]
   restaurants?: [Restaurant]
   users?: [UserInfo]
+  orders?: [Order]
 }
 
 export interface AppStateMachineSchema {
@@ -21,6 +23,10 @@ export interface AppStateMachineSchema {
     login_initiated: {}
     sign_up: {} // sign up page
     register_user: {}
+    orders: {}
+    orders_fetching: {}
+    orders_add_order: {}
+    orders_modify_order: {}
     restaurants: {}
     restaurants_fetching: {}
     restaurants_add_restaurant: {}

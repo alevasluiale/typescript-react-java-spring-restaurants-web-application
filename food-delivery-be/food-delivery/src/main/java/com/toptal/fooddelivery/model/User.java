@@ -2,6 +2,7 @@ package com.toptal.fooddelivery.model;
 
 import com.toptal.fooddelivery.enums.RoleEnum;
 import com.toptal.fooddelivery.enums.TypeEnum;
+import net.bytebuddy.implementation.bind.annotation.Default;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +39,10 @@ public class User {
     @Size(max = 120)
     private String password;
 
+    @NotNull
+    @Column(columnDefinition = "bit default 0")
+    private boolean enabled;
+
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinTable(name ="User_Type",
             joinColumns = {@JoinColumn(name="user_id")},
@@ -62,13 +67,22 @@ public class User {
         this.password = password;
     }
 
-    public User(Long id, @NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email, @NotBlank @Size(max = 120) String password, Set<Type> types, Set<Role> roles) {
+    public User(Long id, @NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email, @NotBlank @Size(max = 120) String password, Set<Type> types, Set<Role> roles,boolean enabled) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.types = types;
         this.roles = roles;
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Long getId() {

@@ -3,6 +3,7 @@ import { Machine, assign } from "xstate"
 import UserService from "../services/user.service"
 import AuthService from "../services/auth.service"
 import MealService from "../services/meal.service"
+import OrderService from "../services/order.service"
 import RestaurantService from "../services/restaurant.service"
 import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent } from "./AppStateMachineSchema"
 import { User } from "./User"
@@ -41,7 +42,8 @@ export const createAppStateMachine = (currentUser?: User) =>
           },
           USERS: 'users_fetching',
           MEALS: 'meals_fetching',
-          RESTAURANTS: 'restaurants_fetching'
+          RESTAURANTS: 'restaurants_fetching',
+          ORDERS: 'orders_fetching'
         }
       },
       signed_in: {
@@ -339,6 +341,64 @@ export const createAppStateMachine = (currentUser?: User) =>
             actions: (context, event) => message.error(event.data.response.data.message, 2)
           }
         }
+      },
+      orders: {
+        on: {
+          ADD_RESTAURANT: 'restaurants_add_restaurant',
+          LOG_OUT: {
+            target: 'home',
+            actions: 'logOut'
+          },
+          HOME: 'home',
+          USERS: 'users_fetching',
+          MEALS: 'meals_fetching',
+          MODIFY_RESTAURANT: 'restaurants_modify_restaurant',
+          DELETE_RESTAURANT: 'restaurants_delete_restaurant'
+        }
+      },
+      orders_fetching: {
+        invoke: {
+          id: 'fetch-orders',
+          src: 'fetchOrders',
+          onDone: {
+            target: 'orders',
+            actions: assign({
+              orders: (context, event) => event.data.data
+            })
+          },
+          onError: {
+            target: 'home',
+            actions: () => message.error('There was an error fetching the orders', 2)
+          }
+        }
+      },
+      orders_add_order: {
+        // invoke: {
+        //   id: 'restaurants_add_restaurant',
+        //   src: 'addRestaurant',
+        //   onDone: {
+        //     target: 'restaurants_fetching',
+        //     actions: () => message.success('Restaurant added succesfully', 2)
+        //   },
+        //   onError: {
+        //     target: 'restaurants',
+        //     actions: (context, event) => message.error(event.data.response.data.message, 2)
+        //   }
+        // }
+      },
+      orders_modify_order: {
+        // invoke: {
+        //   id: 'restaurants_modify_restaurant',
+        //   src: 'modifyRestaurant',
+        //   onDone: {
+        //     target: 'restaurants_fetching',
+        //     actions: () => message.success('Restaurant modified succesfully', 2)
+        //   },
+        //   onError: {
+        //     target: 'restaurants',
+        //     actions: (context, event) => message.error(event.data.response.data.message, 2)
+        //   }
+        // }
       }
     }
   }, {
@@ -397,6 +457,9 @@ export const createAppStateMachine = (currentUser?: User) =>
       },
       deleteRestaurant: (context, event) => {
         return RestaurantService.deleteRestaurant((event as DeleteRestaurantEvent).payload.restaurantId);
+      },
+      fetchOrders: (context,event) => {
+        return OrderService.getOrders();
       }
     }
   })
