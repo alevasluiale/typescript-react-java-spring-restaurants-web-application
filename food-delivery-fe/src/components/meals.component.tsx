@@ -109,7 +109,7 @@ const Meals: React.FC<{
   }> = ({meals,canAdd,isInOrder,deleteMeal,modifyMeal,addMeal}) => {
 
   const classes = useStyles();
-
+console.log(canAdd)
   const [modify,setModify] = useState({
     visible: false,
     id: 0,

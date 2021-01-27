@@ -18,7 +18,7 @@ import { Order } from "./models/Order";
 export const App: React.FC = () => {
 
   const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
-
+  console.log(current.context.currentUser)
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
             )}
 
           {current.context.currentUser &&
-            current.context.currentUser.roles[0].name !== "ROLE_USER" &&
+            current.context.currentUser.roles[0] !== "ROLE_USER" &&
             (<li className="nav-item" onClick={e => {
               send({ type: 'MEALS' })
             }}>
@@ -62,7 +62,7 @@ export const App: React.FC = () => {
 
 
           {current.context.currentUser &&
-            current.context.currentUser.roles[0].name === "ROLE_ADMIN" && (
+            current.context.currentUser.roles[0] === "ROLE_ADMIN" && (
               <li className="nav-item">
                 <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                   send({ type: 'USERS' })
@@ -167,6 +167,8 @@ export const App: React.FC = () => {
 
         <Match state={"meals"} current={current}>
           <Meals meals={current.context.meals}
+            canAdd={current.context.currentUser && 
+              (current.context.currentUser.roles[0] === "ROLE_OWNER" || current.context.currentUser.roles[0] ==="ROLE_ADMIN")}
             deleteMeal={(id: number) => {
               send({ type: 'DELETE_MEAL', payload: { id: id } })
             }}
@@ -176,7 +178,9 @@ export const App: React.FC = () => {
             addMeal={(meal: Meal) => {
               send({ type: 'ADD_MEAL', payload: { meal: meal } })
             }
-            }>
+            }
+            
+            isInOrder={false}>
           </Meals>
         </Match>
 
@@ -184,7 +188,7 @@ export const App: React.FC = () => {
           <Restaurants
             restaurants={current.context.restaurants}
             meals={current.context.meals}
-            isRegularUser={current.context.currentUser?.roles[0].name === "ROLE_USER"}
+            isRegularUser={current.context.currentUser?.roles[0] === "ROLE_USER"}
             addOrder={(meals: Array<any>,restaurantId?:number) => {
               send({type: 'ADD_ORDER',payload:{
                 userId: current.context.currentUser?.id,
