@@ -22,6 +22,7 @@ export interface AppStateMachineSchema {
     signed_in: {}
     login_initiated: {}
     sign_up: {} // sign up page
+    facebook_auth: {}
     register_user: {}
     orders: {}
     orders_fetching: {}
@@ -112,9 +113,17 @@ export type LoginEvent = {
     password: string
   }
 }
+export type FacebookAuthEvent = {
+  type: 'FACEBOOK_AUTH';
+  payload: {
+    username: string,
+    email: string,
+    photoUrl: string
+  }
+}
 export type AppStateMachineEvent = AddMealEvent | LoginEvent 
   | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent 
-  | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent
+  | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent | FacebookAuthEvent
   | {type: 'SIGNED_IN'}
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}

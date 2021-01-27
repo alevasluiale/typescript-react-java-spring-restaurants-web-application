@@ -62,7 +62,7 @@ const Restaurants: React.FC<{
   }
   return (
     <div className={classes.root}>
-      <Formik
+      {isRegularUser === false ? <Formik
         initialValues={{
           id: 0,
           description: '',
@@ -136,7 +136,7 @@ const Restaurants: React.FC<{
             </Paper>
           </Form>
         )}
-      </Formik>
+      </Formik> : null }
       {restaurants?.map(restaurant => (
         <Paper key={restaurant.id} className={classes.paper}>
           <Grid container spacing={2} className="pb-4 unselectable">

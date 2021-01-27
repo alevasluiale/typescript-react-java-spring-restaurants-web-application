@@ -11,6 +11,9 @@ class AuthService {
       })
   }
 
+  facebookAuth(username:string,email:string,photoUrl:string) {
+    return axios.post(API_URL+"facebook-signIn",{username,email,photoUrl})
+  }
   logout() {
     localStorage.removeItem("user");
   }

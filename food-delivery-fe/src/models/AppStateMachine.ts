@@ -5,7 +5,7 @@ import AuthService from "../services/auth.service"
 import MealService from "../services/meal.service"
 import OrderService from "../services/order.service"
 import RestaurantService from "../services/restaurant.service"
-import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent } from "./AppStateMachineSchema"
+import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent } from "./AppStateMachineSchema"
 import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
@@ -63,6 +63,7 @@ export const createAppStateMachine = (currentUser?: User) =>
           SIGN_UP: 'sign_up',
           HOME: 'home',
           MEALS: 'meals_fetching',
+          FACEBOOK_AUTH: 'facebook_auth',
           RESTAURANTS: 'restaurants_fetching'
         }
       },
@@ -84,7 +85,7 @@ export const createAppStateMachine = (currentUser?: User) =>
           },
           onError: {
             target: 'login_page',
-            actions: (context, event) => message.error(event.data.message, 2)
+            actions: (context, event) =>  message.error(event.data.response.data.message, 2)
           }
         },
         on: {
@@ -99,8 +100,29 @@ export const createAppStateMachine = (currentUser?: User) =>
       sign_up: {
         on: {
           REGISTER: 'register_user',
+          FACEBOOK_AUTH: 'facebook_auth',
           LOGIN_PAGE: 'login_page',
           HOME: 'home'
+        }
+      },
+      facebook_auth: {
+        invoke: {
+          id: 'facebook-auth',
+          src: 'facebookAuth',
+          onDone: {
+            target: 'signed_in',
+            actions: assign({
+              currentUser: (context, event) => {
+                message.success('User authenticated with success', 2)
+                localStorage.setItem('user', JSON.stringify(event.data.data))
+                return event.data.data
+              }
+            })
+          },
+          onError: {
+            target: 'sign_up',
+            actions: (context, event) => message.error(event.data.response.data.message, 2)
+          }
         }
       },
       register_user: {
@@ -414,6 +436,9 @@ export const createAppStateMachine = (currentUser?: User) =>
     services: {
       authenticateUser: (context) => {
         return AuthService.checkIfUserIsLoggedIn(AuthService.getCurrentUser().username)
+      },
+      facebookAuth: (context,event) => {
+        return AuthService.facebookAuth((event as FacebookAuthEvent).payload.username,(event as FacebookAuthEvent).payload.email,(event as FacebookAuthEvent).payload.photoUrl)
       },
       loginService: (context, event) => {
 

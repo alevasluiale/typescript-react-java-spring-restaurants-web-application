@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./style/index.css";
 import AuthService from "./services/auth.service";
 import { useMachine } from '@xstate/react';
@@ -17,9 +17,8 @@ import { Order } from "./models/Order";
 
 export const App: React.FC = () => {
 
+
   const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
-
-
 
   return (
     <div>
@@ -52,7 +51,7 @@ export const App: React.FC = () => {
             )}
 
           {current.context.currentUser &&
-            current.context.currentUser.roles[0] !== "ROLE_USER" &&
+            current.context.currentUser.roles[0].name !== "ROLE_USER" &&
             (<li className="nav-item" onClick={e => {
               send({ type: 'MEALS' })
             }}>
@@ -64,7 +63,7 @@ export const App: React.FC = () => {
 
 
           {current.context.currentUser &&
-            current.context.currentUser.roles.includes("ROLE_ADMIN") && (
+            current.context.currentUser.roles[0].name === "ROLE_ADMIN" && (
               <li className="nav-item">
                 <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                   send({ type: 'USERS' })
@@ -116,15 +115,14 @@ export const App: React.FC = () => {
           )}
       </nav>
 
-
       <div className="container py-4">
         <Match state={['home', 'signed_in']} current={current}>
           <Home />
         </Match>
 
         <Match state={'login_page'} current={current}>
-          <Login onLogin={
-            (userName: string, password: string) => {
+          <Login
+            onLogin={(userName: string, password: string) => {
               send({
                 type: 'LOGIN',
                 payload: {
@@ -132,8 +130,17 @@ export const App: React.FC = () => {
                   password: password
                 }
               })
-            }
-          } />
+            }}
+            onFacebookAuth={(username: string, email: string, photoUrl: string) =>
+              send({
+                type: 'FACEBOOK_AUTH',
+                payload: {
+                  username: username,
+                  email: email,
+                  photoUrl: photoUrl
+                }
+              })}
+          />
         </Match>
 
         <Match state={"sign_up"} current={current}>
@@ -145,6 +152,15 @@ export const App: React.FC = () => {
                   username: username,
                   email: email,
                   password: password
+                }
+              })}
+            onFacebookAuth={(username: string, email: string, photoUrl: string) =>
+              send({
+                type: 'FACEBOOK_AUTH',
+                payload: {
+                  username: username,
+                  email: email,
+                  photoUrl: photoUrl
                 }
               })}
           />
@@ -169,7 +185,7 @@ export const App: React.FC = () => {
           <Restaurants
             restaurants={current.context.restaurants}
             meals={current.context.meals}
-            isRegularUser={current.context.currentUser?.roles[0] === "ROLE_USER"}
+            isRegularUser={current.context.currentUser?.roles[0].name === "ROLE_USER"}
             deleteRestaurant={(id: number) => {
               send({ type: 'DELETE_RESTAURANT', payload: { restaurantId: id } })
             }}
