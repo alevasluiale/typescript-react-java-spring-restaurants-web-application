@@ -55,7 +55,8 @@ const Restaurants: React.FC<{
   })
   const [mealsIdsAndQuantity, setMealsIdsAndQuantity] = useState([{
     id: 0,
-    quantity: 0
+    quantity: 0,
+    price: 0
   }])
   const [modify, setModify] = useState({
     visible: false,
@@ -186,7 +187,8 @@ const Restaurants: React.FC<{
                         removeUndefinedFromArray(restaurant.meals).map((meal: Meal) => {
                           return {
                             id: meal.id,
-                            quantity: meal.quantity
+                            quantity: meal.quantity,
+                            price: meal.price
                           }
                         }
                         ))
@@ -215,11 +217,11 @@ const Restaurants: React.FC<{
                 </Button>
                 </Popconfirm>, <Button onClick={() => {
                   setMealsModal({ visible: false, restaurant: {}, meals: [] })
-                  setMealsIdsAndQuantity([{ id: 0, quantity: 0 }])
+                  setMealsIdsAndQuantity([{ id: 0, quantity: 0 ,price:0}])
                 }}>Cancel</Button>]}
               onCancel={() => {
                 setMealsModal({ visible: false, restaurant: {}, meals: [] })
-                setMealsIdsAndQuantity([{ id: 0, quantity: 0 }])
+                setMealsIdsAndQuantity([{ id: 0, quantity: 0 ,price:0}])
               }
               }
             >
@@ -248,7 +250,7 @@ const Restaurants: React.FC<{
                             <input
                               onChange={event => {
                                 setMealsIdsAndQuantity(mealsIdsAndQuantity.map((value, idx) => {
-                                  if (index === idx) return { id: value.id, quantity: Number(event.target.value) }
+                                  if (index === idx) return { id: value.id, quantity: Number(event.target.value),price:value.price }
                                   else return value
                                 }))
                               }
