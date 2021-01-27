@@ -208,16 +208,10 @@ export const App: React.FC = () => {
 
         <Match state={"orders"} current={current}>
           <Orders orders={current.context.orders}
-            deleteOrder={(id: number) => {
-              send({ type: 'DELETE_MEAL', payload: { id: id } })
+            modifyOrder={(id: number,status: string) => {
+              send({ type: 'MODIFY_ORDER', payload: { orderId: id,status:status } })
             }}
-            modifyOrder={(meal: Order) => {
-              send({ type: 'MODIFY_MEAL', payload: { meal: meal } })
-            }}
-            addOrder={(meal: Order) => {
-              send({ type: 'ADD_MEAL', payload: { meal: meal } })
-            }
-            }>
+            >
           </Orders>
         </Match>
 

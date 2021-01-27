@@ -22,17 +22,14 @@ class OrderService {
       })
   }
 
-  // modifyOrder(order: Order,mealsIds:Array<Number>) {
-  //   const name = order.name
-  //   const description = order.description
-  //   return axios
-  //     .post(API_URL+'updateOrder',{name,description,mealsIds},{
-  //       params: {
-  //         orderId: order.id
-  //       },
-  //       headers: authHeader()
-  //     })
-  // }
+  modifyOrder(payload: {orderId: number,status: string}) {
+    const orderId = payload.orderId
+    const status = payload.status
+    return axios
+      .post(API_URL+'updateOrderStatus',{orderId,status},{
+        headers: authHeader()
+      })
+  }
 
   // deleteOrder(id:number) {
   //   return axios

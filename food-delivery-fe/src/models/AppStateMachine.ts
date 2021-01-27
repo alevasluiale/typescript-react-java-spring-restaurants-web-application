@@ -5,7 +5,7 @@ import AuthService from "../services/auth.service"
 import MealService from "../services/meal.service"
 import OrderService from "../services/order.service"
 import RestaurantService from "../services/restaurant.service"
-import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent, BlockUserEvent, AddOrderEvent } from "./AppStateMachineSchema"
+import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent, BlockUserEvent, AddOrderEvent, ModifyOrderEvent } from "./AppStateMachineSchema"
 import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
@@ -392,7 +392,6 @@ export const createAppStateMachine = (currentUser?: User) =>
       },
       orders: {
         on: {
-          ADD_RESTAURANT: 'restaurants_add_restaurant',
           LOG_OUT: {
             target: 'home',
             actions: 'logOut'
@@ -402,8 +401,7 @@ export const createAppStateMachine = (currentUser?: User) =>
           ORDERS: 'orders_fetching',
           RESTAURANTS: 'restaurants_fetching',
           MEALS: 'meals_fetching',
-          MODIFY_RESTAURANT: 'restaurants_modify_restaurant',
-          DELETE_RESTAURANT: 'restaurants_delete_restaurant'
+          MODIFY_ORDER: 'orders_modify_order'
         }
       },
       orders_fetching: {
@@ -439,18 +437,18 @@ export const createAppStateMachine = (currentUser?: User) =>
         }
       },
       orders_modify_order: {
-        // invoke: {
-        //   id: 'restaurants_modify_restaurant',
-        //   src: 'modifyRestaurant',
-        //   onDone: {
-        //     target: 'restaurants_fetching',
-        //     actions: () => message.success('Restaurant modified succesfully', 2)
-        //   },
-        //   onError: {
-        //     target: 'restaurants',
-        //     actions: (context, event) => message.error(event.data.response.data.message, 2)
-        //   }
-        // }
+        invoke: {
+          id: 'orders-modify-order',
+          src: 'modifyOrder',
+          onDone: {
+            target: 'orders_fetching',
+            actions: () => message.success('Order modified succesfully', 2)
+          },
+          onError: {
+            target: 'orders',
+            actions: (context, event) => message.error(event.data.response.data.message, 2)
+          }
+        }
       }
     }
   }, {
@@ -520,8 +518,10 @@ export const createAppStateMachine = (currentUser?: User) =>
         return OrderService.getOrders();
       },
       addOrder: (context,event) => {
-        console.log(event)
         return OrderService.addOrder((event as AddOrderEvent).payload);
+      },
+      modifyOrder:(context,event) => {
+        return OrderService.modifyOrder((event as ModifyOrderEvent).payload);
       }
     }
   })

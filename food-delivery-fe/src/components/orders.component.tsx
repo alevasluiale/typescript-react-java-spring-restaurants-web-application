@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button } from 'antd';
+import { Modal, Button, Popconfirm } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import { Order } from "../models/Order";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -8,9 +8,10 @@ import { Meal } from "../models/Meal";
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { AgGridReact } from 'ag-grid-react';
-import { PlusCircleOutlined } from '@ant-design/icons';
-import {GridReadyEvent} from 'ag-grid-community';
+import { GridReadyEvent } from 'ag-grid-community';
 import Meals from "./meals.component";
+import AuthService from "./../services/auth.service";
+
 function getLatestOrderStatus(orderStatuses: Array<{
   status: {
     name: string
@@ -19,7 +20,9 @@ function getLatestOrderStatus(orderStatuses: Array<{
 }>) {
   let idx = 0;
   for (let i = 1; i < orderStatuses.length; i++) {
-    if (orderStatuses[i].date.getTime() < orderStatuses[idx].date.getTime()) {
+    const d1 = new Date(orderStatuses[i].date)
+    const d2 = new Date(orderStatuses[idx].date)
+    if (d1.getTime() > d2.getTime()) {
       idx = i;
     }
   }
@@ -51,7 +54,66 @@ const useStyles = makeStyles((theme) => ({
     orderSelect: 'none',
   },
 }));
-
+const OperationCellRenderer: React.FC<any> = (props) => {
+  const modifyOrder = props.colDef.cellRendererParams.modifyOrder
+  if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PLACED") {
+    if (AuthService.getCurrentUser().roles[0].name === "ROLE_USER") {
+      return (<Popconfirm title="Are you sure you want to cancel this order?"
+        onConfirm={() => modifyOrder(props.data.id,"CANCELED")}
+      >
+        <Button
+          className="-mt-10 mx-auto"
+          style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+          title="Cancel order"
+        >Cancel</Button>
+      </Popconfirm>)
+    }
+    else return (<Popconfirm title="Are you sure you start processing this order?"
+      onConfirm={() => modifyOrder(props.data.id,"PROCESSING")}
+    >
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Process order"
+      >Process</Button>
+    </Popconfirm>)
+  }
+  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PROCESSING") {
+    return (<Popconfirm title="Are you sure you finished this order?"
+      onConfirm={() => modifyOrder(props.data.id,"IN_ROUTE")}
+    >
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Send In route"
+      >Send</Button>
+    </Popconfirm>)
+  }
+  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "IN_ROUTE") {
+    return (<Popconfirm title="Are you sure you have delivered this order?"
+      onConfirm={() => modifyOrder(props.data.id,"DELIVERED")}
+    >
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Deliver order"
+      >Deliver</Button>
+    </Popconfirm>)
+  }
+  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "DELIVERED" &&
+  AuthService.getCurrentUser().roles[0].name === "ROLE_USER") {
+    return (<Popconfirm title="Are you sure you have received this order?"
+      onConfirm={() => modifyOrder(props.data.id,"RECEIVED")}
+    >
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Mark as received"
+      >Mark Received</Button>
+    </Popconfirm>)
+  }
+  return null
+}
 const MealsCellRenderer: React.FC<any> = (props) => {
   const [visible, setVisible] = useState(false)
 
@@ -88,196 +150,139 @@ const MealsCellRenderer: React.FC<any> = (props) => {
         style={{ cursor: 'pointer', width: '100%', height: "20%" }}
         title="Open meals"
         onClick={() => setVisible(true)}
-      ><PlusCircleOutlined style={{height:"150px"}}className="-mt-10 mx-auto" /></Button>
+      >Show</Button>
     </div>
   )
 }
-const columnDefs = [
-  {
-    headerName: "ID",
-    field: "id",
-    sortable: true,
-    filter: 'agNumberColumnFilter',
-    resizable: true,
-    width: 70,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Date placed",
-    valueGetter: function (params: any) {
-      return new Date(params.data.date).toLocaleString('en-GB')
-    },
-    sortable: true,
-    filter: true,
-    resizable: true,
-    width: 250,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Price",
-    field: "totalAmount",
-    sortable: true,
-    filter: true,
-    resizable: true,
-    width: 150,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Restaurant",
-    valueGetter: function (params: any) {
-      return params.data.restaurants[0].name
-    },
-    sortable: true,
-    filter: true,
-    resizable: true,
-    width: 150,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Status",
-    valueGetter: function (params: any) {
-      return getLatestOrderStatus(params.data.orderStatuses).status.name
-    },
-    sortable: true,
-    filter: true,
-    resizable: true,
-    width: 150,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Last modified",
-    valueGetter: function (params: any) {
-      return new Date(getLatestOrderStatus(params.data.orderStatuses).date).toLocaleString('en-GB')
-    },
-    sortable: true,
-    filter: true,
-    resizable: true,
-    width: 150,
-    filterParams: {
-      applyButton: true,
-      resetButton: true,
-      closeOnApply: true
-    }
-  },
-  {
-    headerName: "Meals",
-    maxWidth: 100,
-    cellRenderer: 'mealsCellRenderer',
-    sortable: true,
-    filter: true,
-    resizable: true
-  }
-]
-const ModifyModal: React.FC<{
-  modify: {
-    visible: boolean
-    id: number
-    restaurantName: string
-    status: string
-    date: string
-    meals: Array<{ meal: Meal, quantity: number }>
-  }
-  setModify: () => void
-  modifyOrder: (values: Order) => void
-}> = ({ modify, setModify, modifyOrder }) => {
-  return (
-    <Modal
-      title={'Modify order ' + modify.restaurantName}
-      visible={modify.visible}
-      footer={[
-        <Button key="cancel" onClick={e => setModify()}>
-          Cancel
-          </Button>,
-        <Button type="primary" form="modifyOrderForm" key="submit" htmlType="submit">
-          Submit
-          </Button>
-      ]}
-    >
-      <Formik
-        initialValues={{
-          id: modify.id,
-          name: modify.restaurantName
-        }}
-        validationSchema={
-          Yup.object().shape({
-            name: Yup.string().required("Required")
-          })
-        }
-        onSubmit={(values) => console.log(values)}
-      >
-        {props => (
-          <Form id="modifyOrderForm">
-            <div className="form-group">
-              <label>Name</label>
-              <Field className="form-control mb-3" name="name" />
-              <ErrorMessage className="alert alert-danger" name="name" />
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <Field className="form-control mb-3" name="description" />
-              <ErrorMessage className="alert alert-danger" name="description" />
-            </div>
-            <div className="form-group">
-              <label>Price</label>
-              <Field component="input" type="number" step="0.01" min="0" placeholder="Price" className="form-control mb-1" name="price" />
-              <ErrorMessage className="alert alert-danger" name="price" />
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </Modal>
-  )
-}
+
 const Orders: React.FC<{
   orders?: [Order]
-  deleteOrder: (id: number) => void
-  modifyOrder: (order: Order) => void
-  addOrder: (order: Order) => void
-}> = ({ orders, deleteOrder, modifyOrder, addOrder }) => {
+  modifyOrder: (id: number,status: string) => void
+}> = ({ orders, modifyOrder }) => {
 
   const classes = useStyles();
-
-  const [modify, setModify] = useState({
-    visible: false,
-    id: 0,
-    restaurantName: '',
-    status: '',
-    date: '',
-    meals: [{ meal: {}, quantity: 0 }]
-  })
+  const columnDefs = [
+    {
+      headerName: "ID",
+      field: "id",
+      sortable: true,
+      filter: 'agNumberColumnFilter',
+      resizable: true,
+      width: 70,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Date placed",
+      valueGetter: function (params: any) {
+        return new Date(params.data.date).toLocaleString('en-GB')
+      },
+      sortable: true,
+      filter: true,
+      resizable: true,
+      width: 250,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Price",
+      valueGetter: function (params: any) {
+        return params.data.totalAmount.toFixed(2)
+      },
+      sortable: true,
+      filter: true,
+      resizable: true,
+      width: 150,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Restaurant",
+      valueGetter: function (params: any) {
+        return params.data.restaurants[0].name
+      },
+      sortable: true,
+      filter: true,
+      resizable: true,
+      width: 150,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Status",
+      valueGetter: function (params: any) {
+        return getLatestOrderStatus(params.data.orderStatuses).status.name
+      },
+      sortable: true,
+      filter: true,
+      resizable: true,
+      width: 150,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Last modified",
+      valueGetter: function (params: any) {
+        return new Date(getLatestOrderStatus(params.data.orderStatuses).date).toLocaleString('en-GB')
+      },
+      sortable: true,
+      filter: true,
+      resizable: true,
+      width: 150,
+      filterParams: {
+        applyButton: true,
+        resetButton: true,
+        closeOnApply: true
+      }
+    },
+    {
+      headerName: "Meals",
+      maxWidth: 100,
+      cellRenderer: 'mealsCellRenderer',
+      sortable: true,
+      filter: true,
+      resizable: true
+    },
+    {
+      headerName: "Operation",
+      maxWidth: 100,
+      cellRenderer: 'operationCellRenderer',
+      cellRendererParams: {
+        modifyOrder: modifyOrder
+      },
+      sortable: true,
+      filter: true,
+      resizable: true
+    }
+  ]
 
   return (
     <div className={classes.root}>
-      <h3 style={{color:'blue'}}>Orders</h3>
+      <h3 style={{ color: 'blue' }}>Orders</h3>
       <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
         <AgGridReact
           columnDefs={columnDefs}
           rowData={orders}
           pagination={true}
           paginationPageSize={24}
-          onGridReady={(event:GridReadyEvent) => event.api.sizeColumnsToFit()}
+          onGridReady={(event: GridReadyEvent) => event.api.sizeColumnsToFit()}
           rowSelection="single"
-          frameworkComponents={{ mealsCellRenderer: MealsCellRenderer }}
+          frameworkComponents={{ mealsCellRenderer: MealsCellRenderer, operationCellRenderer: OperationCellRenderer }}
         >
         </AgGridReact>
       </div>

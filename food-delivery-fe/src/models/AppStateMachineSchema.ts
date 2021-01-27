@@ -136,10 +136,17 @@ export type AddOrderEvent = {
     meals: Array<any>
   }
 }
+export type ModifyOrderEvent = {
+  type: 'MODIFY_ORDER';
+  payload: {
+    orderId: number,
+    status: string
+  }
+}
 export type AppStateMachineEvent = AddMealEvent | LoginEvent 
   | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent 
   | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent | FacebookAuthEvent | BlockUserEvent
-  | AddOrderEvent
+  | AddOrderEvent | ModifyOrderEvent
   | {type: 'SIGNED_IN'}
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}
