@@ -521,7 +521,7 @@ export const createAppStateMachine = (currentUser?: User) =>
         return RestaurantService.deleteRestaurant((event as DeleteRestaurantEvent).payload.restaurantId);
       },
       fetchOrders: (context,event) => {
-        return OrderService.getOrders();
+        return OrderService.getOrders(AuthService.getCurrentUserId());
       },
       addOrder: (context,event) => {
         return OrderService.addOrder((event as AddOrderEvent).payload);

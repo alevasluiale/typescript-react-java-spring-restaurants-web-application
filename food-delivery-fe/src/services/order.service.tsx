@@ -5,9 +5,12 @@ import authHeader from './auth-header';
 const API_URL = `${process.env.REACT_APP_API_URL}/orders/`;
 
 class OrderService {
-  getOrders() {
+  getOrders(userId:number) {
     return axios
-      .get(API_URL+ 'getAll',{
+      .get(API_URL+ 'getAllForUser',{
+        params:{
+          userId: userId
+        },
         headers: authHeader() 
       })
   }
