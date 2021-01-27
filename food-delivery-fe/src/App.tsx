@@ -186,6 +186,13 @@ export const App: React.FC = () => {
             restaurants={current.context.restaurants}
             meals={current.context.meals}
             isRegularUser={current.context.currentUser?.roles[0].name === "ROLE_USER"}
+            addOrder={(meals: Array<any>,restaurantId?:number) => {
+              send({type: 'ADD_ORDER',payload:{
+                userId: current.context.currentUser?.id,
+                restaurantId: restaurantId,
+                meals: meals
+              }})
+            }}
             deleteRestaurant={(id: number) => {
               send({ type: 'DELETE_RESTAURANT', payload: { restaurantId: id } })
             }}

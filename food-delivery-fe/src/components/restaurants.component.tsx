@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, TreeSelect } from 'antd';
+import { Modal, Button, TreeSelect, Popconfirm } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -9,7 +9,7 @@ import { Restaurant } from "../models/Restaurant";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Meal } from "../models/Meal";
-
+import { PlusCircleOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,12 +41,22 @@ const Restaurants: React.FC<{
   restaurants?: [Restaurant]
   meals?: [Meal]
   isRegularUser?: boolean
+  addOrder?:(meals: Array<any>,restaurantId?:number) => void
   deleteRestaurant: (id: number) => void
   modifyRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
   addRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
-}> = ({ restaurants, meals,isRegularUser, deleteRestaurant, modifyRestaurant, addRestaurant }) => {
+}> = ({ restaurants, meals, isRegularUser,addOrder, deleteRestaurant, modifyRestaurant, addRestaurant }) => {
 
   const classes = useStyles();
+  const [mealsModal, setMealsModal] = useState({
+    visible: false,
+    restaurant: {} as Restaurant,
+    meals: [] as Array<Meal>
+  })
+  const [mealsIdsAndQuantity, setMealsIdsAndQuantity] = useState([{
+    id: 0,
+    quantity: 0
+  }])
   const [modify, setModify] = useState({
     visible: false,
     id: 0,
@@ -135,7 +145,7 @@ const Restaurants: React.FC<{
             </Paper>
           </Form>
         )}
-      </Formik> : null }
+      </Formik> : null}
       {restaurants?.map(restaurant => (
         <Paper key={restaurant.id} className={classes.paper}>
           <Grid container spacing={2} className="pb-4 unselectable">
@@ -165,92 +175,178 @@ const Restaurants: React.FC<{
                       mealsIds: removeUndefinedFromArray(restaurant.meals?.map(meal => meal.id))
                     })}>Modify</Button>
                   </Typography>
-                </Grid> : null }
+                </Grid> : null}
               </Grid>
-              <Grid item>
+              <Grid item className="my-auto mx-auto">
                 <Typography variant="subtitle1">
-                  <Button shape="round" type="primary" style={{ background: 'green' }}>
+                  <Button shape="round" type="primary" style={{ background: 'green' }}
+                    onClick={() => {
+                      setMealsModal({ visible: true, restaurant: restaurant, meals: removeUndefinedFromArray(restaurant.meals) })
+                      setMealsIdsAndQuantity(
+                        removeUndefinedFromArray(restaurant.meals).map((meal: Meal) => {
+                          return {
+                            id: meal.id,
+                            quantity: meal.quantity
+                          }
+                        }
+                        ))
+                    }}>
                     Browse
               </Button>
                 </Typography>
               </Grid>
             </Grid>
           </Grid>
-        </Paper>))}
-      {modify.visible && <Modal
-        title={'Modify restaurant ' + modify.name}
-        visible={modify.visible}
-        footer={[
-          <Button key="cancel" onClick={e => setModify({
-            id: 0,
-            name: '',
-            visible: false,
-            description: '',
-            mealsIds: []
-          })}>
-            Cancel
-          </Button>,
-          <Button type="primary" form="modifyRestaurantForm" key="submit" htmlType="submit">
-            Submit
-          </Button>
-        ]}
-      >
-        <Formik
-          initialValues={{
-            id: modify.id,
-            name: modify.name,
-            description: modify.description,
-            mealsIds: modify.mealsIds
-          }}
-          validationSchema={
-            Yup.object().shape({
-              name: Yup.string().required("Required"),
-              description: Yup.string().required("Required"),
-              mealsIds: Yup.array().required("Required")
-            })
+          {
+            mealsModal.visible && <Modal
+              visible={mealsModal.visible}
+              title={"Order from " + mealsModal.restaurant.name}
+              okText="Place order"
+              footer={[
+                <Popconfirm
+                  key="popconfirm"
+                  onConfirm={() => addOrder ? addOrder(
+                    mealsIdsAndQuantity,
+                    mealsModal.restaurant.id
+                  ) : {}}
+                  title="Are you sure you want to place this order for ?">
+                  <Button key="save" type="primary">
+                    Place order
+                </Button>
+                </Popconfirm>, <Button onClick={() => {
+                  setMealsModal({ visible: false, restaurant: {}, meals: [] })
+                  setMealsIdsAndQuantity([{ id: 0, quantity: 0 }])
+                }}>Cancel</Button>]}
+              onCancel={() => {
+                setMealsModal({ visible: false, restaurant: {}, meals: [] })
+                setMealsIdsAndQuantity([{ id: 0, quantity: 0 }])
+              }
+              }
+            >
+              {mealsModal.meals?.map((meal, index) => (
+                <Paper key={meal.id} className={classes.paper}>
+                  <Grid container spacing={2} className="pb-4 unselectable">
+                    <Grid item xs={12} sm container>
+                      <Grid item xs container direction="column" spacing={2}>
+                        <Grid item xs>
+                          <Typography gutterBottom variant="subtitle1">
+                            <span className="nameText">{meal.name}</span>
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {meal.description}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+
+                      <Grid className="mx-auto" item xs container direction="column" spacing={10}></Grid>
+                      <Grid className="mx-auto" item xs container direction="column" spacing={10}>
+                        <Grid item xs >
+                          <Typography gutterBottom variant="subtitle1" >
+                            <span className="nameText">{meal.price?.toFixed(2) + " $"}</span>
+                          </Typography>
+                          <Typography variant="subtitle1" gutterBottom className="flex">
+                            <input
+                              onChange={event => {
+                                setMealsIdsAndQuantity(mealsIdsAndQuantity.map((value, idx) => {
+                                  if (index === idx) return { id: value.id, quantity: Number(event.target.value) }
+                                  else return value
+                                }))
+                              }
+                              }
+                              type="number" placeholder="Quantity" step="1" className="w-1/3" />
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Paper>))}
+
+            </Modal>
           }
-          onSubmit={(values) => modifyRestaurant(values, values.mealsIds)}
+
+        </Paper>))
+      }
+
+
+
+
+
+      {
+        modify.visible && <Modal
+          title={'Modify restaurant ' + modify.name}
+          visible={modify.visible}
+          footer={[
+            <Button key="cancel" onClick={e => setModify({
+              id: 0,
+              name: '',
+              visible: false,
+              description: '',
+              mealsIds: []
+            })}>
+              Cancel
+          </Button>,
+            <Button type="primary" form="modifyRestaurantForm" key="submit" htmlType="submit">
+              Submit
+          </Button>
+          ]}
         >
-          {props => (
-            <Form id="modifyRestaurantForm">
-              <div className="form-group">
-                <label>Name</label>
-                <Field className="form-control mb-3" name="name" />
-                <ErrorMessage className="alert alert-danger" name="name" />
-              </div>
-              <div className="form-group">
-                <label>Description</label>
-                <Field className="form-control mb-3" name="description" />
-                <ErrorMessage className="alert alert-danger" name="description" />
-              </div>
-              <div className="form-group">
-                <label>Meals</label>
-                <TreeSelect
-                  showSearch
-                  style={{ width: '100%' }}
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={meals?.map((meal: Meal) => {
-                    return {
-                      title: meal.name,
-                      value: meal.id,
-                      key: meal.id
-                    }
-                  })}
-                  placeholder="Select meals"
-                  allowClear
-                  treeCheckable={true}
-                  showCheckedStrategy="SHOW_PARENT"
-                  treeDefaultExpandAll
-                  value={props.values.mealsIds}
-                  onChange={value => props.setFieldValue("mealsIds", value)}
-                />
-                <ErrorMessage className="alert alert-danger" name="mealsIds" />
-              </div>
-            </Form>
-          )}
-        </Formik>
-      </Modal>}
-    </div>
+          <Formik
+            initialValues={{
+              id: modify.id,
+              name: modify.name,
+              description: modify.description,
+              mealsIds: modify.mealsIds
+            }}
+            validationSchema={
+              Yup.object().shape({
+                name: Yup.string().required("Required"),
+                description: Yup.string().required("Required"),
+                mealsIds: Yup.array().required("Required")
+              })
+            }
+            onSubmit={(values) => modifyRestaurant(values, values.mealsIds)}
+          >
+            {props => (
+              <Form id="modifyRestaurantForm">
+                <div className="form-group">
+                  <label>Name</label>
+                  <Field className="form-control mb-3" name="name" />
+                  <ErrorMessage className="alert alert-danger" name="name" />
+                </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <Field className="form-control mb-3" name="description" />
+                  <ErrorMessage className="alert alert-danger" name="description" />
+                </div>
+                <div className="form-group">
+                  <label>Meals</label>
+                  <TreeSelect
+                    showSearch
+                    style={{ width: '100%' }}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    treeData={meals?.map((meal: Meal) => {
+                      return {
+                        title: meal.name,
+                        value: meal.id,
+                        key: meal.id
+                      }
+                    })}
+                    placeholder="Select meals"
+                    allowClear
+                    treeCheckable={true}
+                    showCheckedStrategy="SHOW_PARENT"
+                    treeDefaultExpandAll
+                    value={props.values.mealsIds}
+                    onChange={value => props.setFieldValue("mealsIds", value)}
+                  />
+                  <ErrorMessage className="alert alert-danger" name="mealsIds" />
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+      }
+    </div >
   )
 }
 

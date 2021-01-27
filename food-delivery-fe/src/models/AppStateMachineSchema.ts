@@ -128,9 +128,18 @@ export type FacebookAuthEvent = {
     photoUrl: string
   }
 }
+export type AddOrderEvent = {
+  type: 'ADD_ORDER',
+  payload: {
+    userId?: number,
+    restaurantId?: number,
+    meals: Array<any>
+  }
+}
 export type AppStateMachineEvent = AddMealEvent | LoginEvent 
   | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent 
   | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent | FacebookAuthEvent | BlockUserEvent
+  | AddOrderEvent
   | {type: 'SIGNED_IN'}
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}

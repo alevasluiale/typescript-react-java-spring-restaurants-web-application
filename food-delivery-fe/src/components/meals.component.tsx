@@ -105,7 +105,8 @@ const Meals: React.FC<{
    modifyMeal: (meal:Meal) => void
    addMeal: (meal:Meal) => void
   canAdd?: boolean
-  }> = ({meals,canAdd,deleteMeal,modifyMeal,addMeal}) => {
+  isInOrder?: boolean
+  }> = ({meals,canAdd,isInOrder,deleteMeal,modifyMeal,addMeal}) => {
 
   const classes = useStyles();
 
@@ -194,7 +195,7 @@ const Meals: React.FC<{
                   {meal.description}
                 </Typography>
               </Grid>
-              <Grid item>
+              {isInOrder === false ?<Grid item>
                 <Typography variant="body2" style={{ cursor: 'pointer' }}>
                   <Button className="mr-4" shape="round" type="primary" style={{color: 'black'}} danger onClick={e => deleteMeal(meal.id ?? 0)}>Remove</Button>
                   <Button className="mr-4" shape="round" type="primary" onClick={e => {
@@ -206,7 +207,7 @@ const Meals: React.FC<{
                     price: meal.price ?? 0
                     })}}>Modify</Button>
                 </Typography>
-              </Grid>
+              </Grid> : null }
             </Grid>
             <Grid item>
               <Typography variant="subtitle1">

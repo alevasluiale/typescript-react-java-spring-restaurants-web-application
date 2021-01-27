@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
 import { Order } from "../models/Order";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -73,6 +69,7 @@ const MealsCellRenderer: React.FC<any> = (props) => {
       >
         <Meals
           canAdd={false}
+          isInOrder={true}
           deleteMeal={(id: number) => { }}
           modifyMeal={(meal: Meal) => { }}
           addMeal={(meal: Meal) => { }}
@@ -91,7 +88,7 @@ const MealsCellRenderer: React.FC<any> = (props) => {
         style={{ cursor: 'pointer', width: '100%', height: "20%" }}
         title="Open meals"
         onClick={() => setVisible(true)}
-      ><PlusCircleOutlined className="my-auto mx-auto" /></Button>
+      ><PlusCircleOutlined style={{height:"150px"}}className="-mt-10 mx-auto" /></Button>
     </div>
   )
 }
@@ -271,63 +268,7 @@ const Orders: React.FC<{
 
   return (
     <div className={classes.root}>
-      <Formik
-        initialValues={{
-          id: 0,
-          name: '',
-          description: '',
-          price: ('' as unknown) as number
-        }}
-        validationSchema={
-          Yup.object().shape({
-            name: Yup.string().required("Required"),
-            description: Yup.string().required("Required"),
-            price: Yup.number().required("Required")
-          })
-        }
-        onSubmit={(values) => console.log(values)}
-      >
-        {props => (
-          <Form id="addOrderForm" className="unselectable">
-            <Paper key="addOrder" className={classes.paper}>
-              <Grid container spacing={2} className="pb-4 unselectable">
-                <Grid item className="my-auto">
-                  <ButtonBase className={classes.image}>
-                    <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-                  </ButtonBase>
-                </Grid>
-                <Grid item xs={12} sm container>
-                  <Grid item xs container direction="column" spacing={2}>
-                    <Grid item xs>
-                      <Typography gutterBottom variant="subtitle1">
-                        <div className="form-group">
-                          <Field placeholder="Name" className="form-control mb-1" name="name" />
-                          <ErrorMessage className="alert alert-danger" name="name" />
-                        </div>
-                        <div className="form-group">
-                          <Field placeholder="Description" className="form-control mb-1" name="description" />
-                          <ErrorMessage className="alert alert-danger" name="description" />
-                        </div>
-                        <div className="form-group">
-                          <Field component="input" type="number" step="0.01" min="0" placeholder="Price" className="form-control mb-1" name="price" />
-                          <ErrorMessage className="alert alert-danger" name="price" />
-                        </div>
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid item className="mx-4 my-auto">
-                    <Typography variant="subtitle1">
-                      <Button
-                        form="addOrderForm" key="submit" htmlType="submit"
-                        shape="round" type="primary" style={{ background: 'green' }}>Add order</Button>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Form>
-        )}
-      </Formik>
+      <h3 style={{color:'blue'}}>Orders</h3>
       <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
         <AgGridReact
           columnDefs={columnDefs}
@@ -340,66 +281,6 @@ const Orders: React.FC<{
         >
         </AgGridReact>
       </div>
-      {orders?.map(order => (
-        <Paper key={order.id} className={classes.paper}>
-          <Grid container spacing={2} className="pb-4 unselectable">
-            <Grid item className="my-auto unselectable">
-              <ButtonBase className={classes.image}>
-                <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-              </ButtonBase>
-            </Grid>
-            <Grid item xs={12} sm container>
-              <Grid item xs container direction="column" spacing={2}>
-                <Grid item xs>
-                  <Typography gutterBottom variant="subtitle1">
-                    <span className="nameText">{order.restaurants ? order.restaurants[0].name : null}</span>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {new Date(order.date).toLocaleString('en-GB')}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="body2" style={{ cursor: 'pointer' }}>
-                    <Button className="mr-4" shape="round" type="primary" style={{ color: 'black' }} danger onClick={e => deleteOrder(order.id ?? 0)}>Remove</Button>
-                    <Button className="mr-4" shape="round" type="primary" onClick={e => {
-                      setModify({
-                        visible: true,
-                        id: order.id ?? 0,
-                        restaurantName: order.restaurants[0].name ?? '',
-                        status: 'test',
-                        date: 'test',
-                        meals: order.orderMeals
-                      })
-                    }}>Modify</Button>
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item>
-                <Typography variant="subtitle1">
-                  <span className="descriptionText">
-                    {order?.totalAmount?.toFixed(2) + " $"}
-                  </span>
-                </Typography>
-                <Typography variant="subtitle1">
-                  <span className="descriptionText">
-                    {getLatestOrderStatus(order?.orderStatuses).status.name}
-                  </span>
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Paper>))}
-      {modify.visible && <ModifyModal
-        modify={modify}
-        modifyOrder={modifyOrder}
-        setModify={() => setModify({
-          visible: false,
-          id: 0,
-          restaurantName: '',
-          status: '',
-          date: '',
-          meals: []
-        })} />}
     </div>
   )
 }

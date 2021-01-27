@@ -12,14 +12,15 @@ class OrderService {
       })
   }
 
-  // addOrder(order: Order) {
-  //   const name = order.name
-  //   const description = order.description
-  //   return axios
-  //     .post(API_URL+'addOrder',{name,description,mealsIds},{
-  //       headers: authHeader()
-  //     })
-  // }
+  addOrder(order: any) {
+    const restaurantId = order.restaurantId
+    const userId = order.userId
+    const meals = order.meals
+    return axios
+      .post(API_URL+'addOrder',{userId,restaurantId,meals},{
+        headers: authHeader()
+      })
+  }
 
   // modifyOrder(order: Order,mealsIds:Array<Number>) {
   //   const name = order.name

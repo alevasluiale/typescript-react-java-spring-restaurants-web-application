@@ -5,7 +5,7 @@ import AuthService from "../services/auth.service"
 import MealService from "../services/meal.service"
 import OrderService from "../services/order.service"
 import RestaurantService from "../services/restaurant.service"
-import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent, BlockUserEvent } from "./AppStateMachineSchema"
+import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent, BlockUserEvent, AddOrderEvent } from "./AppStateMachineSchema"
 import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
@@ -326,6 +326,7 @@ export const createAppStateMachine = (currentUser?: User) =>
           RESTAURANTS: 'restaurants_fetching',
           ORDERS: 'orders_fetching',
           MEALS: 'meals_fetching',
+          ADD_ORDER: 'orders_add_order',
           MODIFY_RESTAURANT: 'restaurants_modify_restaurant',
           DELETE_RESTAURANT: 'restaurants_delete_restaurant'
         }
@@ -422,18 +423,20 @@ export const createAppStateMachine = (currentUser?: User) =>
         }
       },
       orders_add_order: {
-        // invoke: {
-        //   id: 'restaurants_add_restaurant',
-        //   src: 'addRestaurant',
-        //   onDone: {
-        //     target: 'restaurants_fetching',
-        //     actions: () => message.success('Restaurant added succesfully', 2)
-        //   },
-        //   onError: {
-        //     target: 'restaurants',
-        //     actions: (context, event) => message.error(event.data.response.data.message, 2)
-        //   }
-        // }
+        invoke: {
+          id: 'orders_add_order',
+          src: 'addOrder',
+          onDone: {
+            target: 'orders_fetching',
+            actions: () => {
+              message.success('Order added succesfully', 2)
+            }
+          },
+          onError: {
+            target: 'restaurants',
+            actions: (context, event) => message.error(event.data.response.data.message, 2)
+          }
+        }
       },
       orders_modify_order: {
         // invoke: {
@@ -515,6 +518,10 @@ export const createAppStateMachine = (currentUser?: User) =>
       },
       fetchOrders: (context,event) => {
         return OrderService.getOrders();
+      },
+      addOrder: (context,event) => {
+        console.log(event)
+        return OrderService.addOrder((event as AddOrderEvent).payload);
       }
     }
   })
