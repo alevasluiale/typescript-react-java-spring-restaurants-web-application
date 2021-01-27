@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Restaurant } from "../models/Restaurant";
 import authHeader from './auth-header';
-
+import AuthService from './auth.service';
 const API_URL = `${process.env.REACT_APP_API_URL}/restaurants/`;
 
 class RestaurantService {
@@ -17,6 +17,9 @@ class RestaurantService {
     const description = restaurant.description
     return axios
       .post(API_URL+'addRestaurant',{name,description,mealsIds},{
+        params:{
+          userId: AuthService.getCurrentUserId()
+        },
         headers: authHeader()
       })
   }

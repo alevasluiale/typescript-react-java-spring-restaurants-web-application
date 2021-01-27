@@ -1,18 +1,28 @@
 import axios from "axios";
 import { Order } from "../models/Order";
 import authHeader from './auth-header';
-
+import AuthService from './auth.service';
 const API_URL = `${process.env.REACT_APP_API_URL}/orders/`;
 
 class OrderService {
   getOrders(userId:number) {
-    return axios
+    if(AuthService.getCurrentUser().roles[0] === "ROLE_OWNER")
+    {return axios
+      .get(API_URL+ 'getAllForOwner',{
+        params:{
+          userId: userId
+        },
+        headers: authHeader() 
+      })}
+      else {
+        return axios
       .get(API_URL+ 'getAllForUser',{
         params:{
           userId: userId
         },
         headers: authHeader() 
       })
+      }
   }
 
   addOrder(order: any) {

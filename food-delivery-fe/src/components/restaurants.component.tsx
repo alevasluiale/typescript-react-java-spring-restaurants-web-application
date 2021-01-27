@@ -211,7 +211,7 @@ const Restaurants: React.FC<{
                     mealsIdsAndQuantity,
                     mealsModal.restaurant.id
                   ) : {}}
-                  title="Are you sure you want to place this order for ?">
+                  title="Are you sure you want to place this order ?">
                   <Button key="save" type="primary">
                     Place order
                 </Button>
