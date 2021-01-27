@@ -54,6 +54,8 @@ export const createAppStateMachine = (currentUser?: User) =>
           },
           USERS: 'users_fetching',
           MEALS: 'meals_fetching',
+          HOME: 'home',
+          ORDERS: 'orders_fetching',
           RESTAURANTS: 'restaurants_fetching'
         }
       },
@@ -171,6 +173,8 @@ export const createAppStateMachine = (currentUser?: User) =>
           HOME: 'home',
           USERS: 'users_fetching',
           RESTAURANTS: 'restaurants_fetching',
+          ORDERS: 'orders_fetching',
+          MEALS: 'meals_fetching',
           MODIFY_MEAL: 'meals_modify_meal',
           DELETE_MEAL: 'meals_delete_meal'
         }
@@ -246,7 +250,9 @@ export const createAppStateMachine = (currentUser?: User) =>
           MODIFY_USER: 'users_modify_user',
           ADD_USER: 'users_add_user',
           MEALS: 'meals_fetching',
-          RESTAURANTS: 'restaurants_fetching'
+          USERS: 'users_fetching',
+          RESTAURANTS: 'restaurants_fetching',
+          ORDERS: 'orders_fetching'
         }
       },
       users_delete_user: {
@@ -300,6 +306,8 @@ export const createAppStateMachine = (currentUser?: User) =>
           },
           HOME: 'home',
           USERS: 'users_fetching',
+          RESTAURANTS: 'restaurants_fetching',
+          ORDERS: 'orders_fetching',
           MEALS: 'meals_fetching',
           MODIFY_RESTAURANT: 'restaurants_modify_restaurant',
           DELETE_RESTAURANT: 'restaurants_delete_restaurant'
@@ -373,6 +381,8 @@ export const createAppStateMachine = (currentUser?: User) =>
           },
           HOME: 'home',
           USERS: 'users_fetching',
+          ORDERS: 'orders_fetching',
+          RESTAURANTS: 'restaurants_fetching',
           MEALS: 'meals_fetching',
           MODIFY_RESTAURANT: 'restaurants_modify_restaurant',
           DELETE_RESTAURANT: 'restaurants_delete_restaurant'

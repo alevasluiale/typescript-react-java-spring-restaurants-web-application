@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
 
   const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
-
+  
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">

@@ -2,7 +2,6 @@ import React  from "react";
 import {Formik,Field,Form, ErrorMessage} from "formik";
 import FacebookLogin from 'react-facebook-login';
 import * as Yup from 'yup';
-import AuthService from "./../services/auth.service"
 interface RegisterProps {
   onRegister: (username: string,email:string, password: string) => void
   onFacebookAuth: (username: string,email:string,photoUrl:string)=>void

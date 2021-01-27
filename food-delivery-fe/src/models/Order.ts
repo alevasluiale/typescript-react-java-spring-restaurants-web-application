@@ -5,11 +5,12 @@ export interface Order {
   id?: number
   date: Date
   totalAmount: number
-  restaurant: [Restaurant]
-  orderStatutes: Array<{
+  restaurants: Array<Restaurant>
+  orderStatuses: Array<{
     status: {
       name: string
     }
+    date: Date
   }>
   orderMeals: Array<{
     meal: Meal

@@ -8,7 +8,6 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import { UserInfo } from "../models/UserInfo";
 import {Formik,Form,Field,ErrorMessage} from 'formik';
 import * as Yup from 'yup';
-import authService from "../services/auth.service";
 
 export interface ModifyUserProps {
   id: number
@@ -141,7 +140,8 @@ const Users: React.FC<{
         <Grid container spacing={2} className="pb-4 unselectable">
           <Grid item  className="my-auto unselectable">
             <ButtonBase className={classes.image}>
-              <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
+              <img className={classes.img} alt="complex" 
+              src={user.photoUrl ? user.photoUrl : "https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png"} />
             </ButtonBase>
           </Grid>
           <Grid item xs={12} sm container>
