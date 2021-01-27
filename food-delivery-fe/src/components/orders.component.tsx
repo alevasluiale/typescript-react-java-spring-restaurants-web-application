@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Modal, Button, Popconfirm } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import { Order } from "../models/Order";
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import { Meal } from "../models/Meal";
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';

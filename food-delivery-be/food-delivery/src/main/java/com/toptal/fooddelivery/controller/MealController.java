@@ -4,7 +4,6 @@ package com.toptal.fooddelivery.controller;
 import com.toptal.fooddelivery.model.Meal;
 import com.toptal.fooddelivery.repository.MealRepository;
 import com.toptal.fooddelivery.request.MealRequest;
-import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

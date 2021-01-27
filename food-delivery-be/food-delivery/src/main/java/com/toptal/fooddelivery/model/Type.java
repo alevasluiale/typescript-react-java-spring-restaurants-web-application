@@ -1,6 +1,5 @@
 package com.toptal.fooddelivery.model;
 
-import com.toptal.fooddelivery.enums.RoleEnum;
 import com.toptal.fooddelivery.enums.TypeEnum;
 
 import javax.persistence.*;

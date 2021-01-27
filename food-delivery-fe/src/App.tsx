@@ -13,7 +13,6 @@ import { createAppStateMachine } from "./models/AppStateMachine";
 import Restaurants from "./components/restaurants.component";
 import { Restaurant } from "./models/Restaurant";
 import Orders from "./components/orders.component";
-import { Order } from "./models/Order";
 
 export const App: React.FC = () => {
 

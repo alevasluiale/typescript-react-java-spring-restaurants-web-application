@@ -8,7 +8,6 @@ import com.toptal.fooddelivery.repository.MealRepository;
 import com.toptal.fooddelivery.repository.RestaurantRepository;
 import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.RestaurantRequest;
-import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
 import com.toptal.fooddelivery.response.RestaurantResponse;
 import org.springframework.beans.factory.annotation.Autowired;

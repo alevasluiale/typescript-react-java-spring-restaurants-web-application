@@ -1,7 +1,6 @@
 package com.toptal.fooddelivery.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity

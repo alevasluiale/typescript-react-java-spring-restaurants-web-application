@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Order } from "../models/Order";
 import authHeader from './auth-header';
 import AuthService from './auth.service';
 const API_URL = `${process.env.REACT_APP_API_URL}/orders/`;
@@ -14,7 +13,7 @@ class OrderService {
         },
         headers: authHeader() 
       })}
-      else {
+      else if(AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
         return axios
       .get(API_URL+ 'getAllForUser',{
         params:{
@@ -23,6 +22,13 @@ class OrderService {
         headers: authHeader() 
       })
       }
+      else if(AuthService.getCurrentUser().roles[0] === "ROLE_ADMIN") {
+        return axios
+      .get(API_URL+ 'getAll',{
+        headers: authHeader() 
+      })
+      }
+      else return Promise.resolve()
   }
 
   addOrder(order: any) {

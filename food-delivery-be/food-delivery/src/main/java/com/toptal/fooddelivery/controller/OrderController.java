@@ -8,16 +8,12 @@ import com.toptal.fooddelivery.repository.*;
 import com.toptal.fooddelivery.request.MealRequest;
 import com.toptal.fooddelivery.request.OrderRequest;
 import com.toptal.fooddelivery.request.OrderStatusRequest;
-import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
 import com.toptal.fooddelivery.response.OrderResponse;
 import com.toptal.fooddelivery.response.OrderResponseNoRestaurant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.util.*;

@@ -1,9 +1,5 @@
 package com.toptal.fooddelivery.model;
 
-import com.toptal.fooddelivery.enums.RoleEnum;
-import com.toptal.fooddelivery.enums.TypeEnum;
-import net.bytebuddy.implementation.bind.annotation.Default;
-
 import java.util.HashSet;
 import java.util.Set;
 

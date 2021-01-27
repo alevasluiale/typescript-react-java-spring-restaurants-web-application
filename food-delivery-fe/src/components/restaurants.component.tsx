@@ -9,7 +9,6 @@ import { Restaurant } from "../models/Restaurant";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Meal } from "../models/Meal";
-import { PlusCircleOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
