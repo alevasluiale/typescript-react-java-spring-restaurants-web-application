@@ -39,12 +39,12 @@ public class OrderController {
     @Autowired
     private StatusRepository statusRepository;
     @GetMapping("/getAll")
-    List<OrderResponse> getAllOrders() {
+    List<OrderResponseNoRestaurant> getAllOrders() {
         return orderRepository.findBy();
     }
 
     @GetMapping("/getAllForUser")
-    List<OrderResponse> getAllForUser(@RequestParam("userId") Long userId) {
+    List<OrderResponseNoRestaurant> getAllForUser(@RequestParam("userId") Long userId) {
         return orderRepository.findByUsersId(userId);
     }
     @GetMapping("/getAllForOwner")

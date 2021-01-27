@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
-    List<OrderResponse> findBy();
+    List<OrderResponseNoRestaurant> findBy();
 
-    List<OrderResponse> findByUsersId(Long id);
+    List<OrderResponseNoRestaurant> findByUsersId(Long id);
     List<OrderResponseNoRestaurant> findByRestaurantsId(Long id);
 }

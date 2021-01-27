@@ -45,7 +45,7 @@ const Restaurants: React.FC<{
   modifyRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
   addRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
 }> = ({ restaurants, meals, isRegularUser,addOrder, deleteRestaurant, modifyRestaurant, addRestaurant }) => {
-  console.log(restaurants)
+
   const classes = useStyles();
   const [mealsModal, setMealsModal] = useState({
     visible: false,

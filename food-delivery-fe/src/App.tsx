@@ -17,7 +17,7 @@ import Orders from "./components/orders.component";
 export const App: React.FC = () => {
 
   const [current, send] = useMachine(createAppStateMachine(AuthService.getCurrentUser()))
-  console.log(current.context.currentUser)
+  
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">
