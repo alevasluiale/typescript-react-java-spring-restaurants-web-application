@@ -10,6 +10,7 @@ import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.RestaurantRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
+import com.toptal.fooddelivery.response.RestaurantResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,8 +32,8 @@ public class RestaurantController {
     @Autowired
     private UserRepository userRepository;
     @GetMapping("/getAll")
-    List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAll();
+    List<RestaurantResponse> getAllRestaurants() {
+        return restaurantRepository.findBy();
     }
 
     @PostMapping("/addRestaurant")
