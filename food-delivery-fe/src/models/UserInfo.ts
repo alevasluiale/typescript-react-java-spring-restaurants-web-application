@@ -7,4 +7,5 @@ export interface UserInfo {
     name: string
   }>
   photoUrl?: string
+  blocked: boolean
 }

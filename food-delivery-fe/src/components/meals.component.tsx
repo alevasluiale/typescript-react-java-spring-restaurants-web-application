@@ -104,7 +104,8 @@ const Meals: React.FC<{
    deleteMeal: (id:number) => void
    modifyMeal: (meal:Meal) => void
    addMeal: (meal:Meal) => void
-  }> = ({meals,deleteMeal,modifyMeal,addMeal}) => {
+  canAdd?: boolean
+  }> = ({meals,canAdd,deleteMeal,modifyMeal,addMeal}) => {
 
   const classes = useStyles();
 
@@ -118,7 +119,7 @@ const Meals: React.FC<{
 
   return (
     <div className={classes.root}>
-      <Formik 
+      {canAdd && <Formik 
         initialValues= {{
           id: 0,
           name: '',
@@ -174,7 +175,7 @@ const Meals: React.FC<{
               </Paper>
             </Form>
           )}
-      </Formik>
+      </Formik>}
       {meals?.map(meal => (
       <Paper key={meal.id} className={classes.paper}>
         <Grid container spacing={2} className="pb-4 unselectable">
@@ -211,6 +212,17 @@ const Meals: React.FC<{
               <Typography variant="subtitle1">
                 <span className="descriptionText">
                   {meal?.price?.toFixed(2) + " $"}
+                </span>
+              </Typography>
+              <Typography variant="body2">
+                <span className="descriptionText">
+                  {meal && meal.quantity ? ""+meal.quantity+" QTY" : null}
+                </span>
+              </Typography>
+              
+              <Typography variant="body2">
+                <span className="descriptionText">
+                  {meal && meal.quantity && meal.price ? ""+(meal.quantity * meal.price).toFixed(2)+" TOT" : null}
                 </span>
               </Typography>
             </Grid>

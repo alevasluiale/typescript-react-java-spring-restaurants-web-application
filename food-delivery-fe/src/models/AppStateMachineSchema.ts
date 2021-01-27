@@ -43,6 +43,7 @@ export interface AppStateMachineSchema {
     users_delete_user:{}
     users_modify_user:{}
     users_add_user:{}
+    users_block:{}
   },
   EventObject: {}
 }
@@ -76,6 +77,12 @@ export type ModifyUserEvent = {
 }
 export type DeleteUserEvent = {
   type: 'DELETE_USER';
+  payload: {
+    id: number
+  }
+}
+export type BlockUserEvent = {
+  type: 'BLOCK_USER';
   payload: {
     id: number
   }
@@ -123,7 +130,7 @@ export type FacebookAuthEvent = {
 }
 export type AppStateMachineEvent = AddMealEvent | LoginEvent 
   | RegisterEvent | DeleteUserEvent | ModifyUserEvent | AddUserEvent | ModifyMealEvent | DeleteMealEvent 
-  | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent | FacebookAuthEvent
+  | AddRestaurantEvent | ModifyRestaurantEvent | DeleteRestaurantEvent | FacebookAuthEvent | BlockUserEvent
   | {type: 'SIGNED_IN'}
   | {type: 'HOME'}
   | {type: 'LOGIN_PAGE'}

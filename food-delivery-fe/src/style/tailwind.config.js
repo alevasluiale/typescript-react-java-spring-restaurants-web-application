@@ -2,7 +2,7 @@ module.exports = {
 
   important: true,
   target: 'ie11',
-  purge: ['./src/**/*.html','./public/**/*.html','./src/**/*.tsx'],
+  purge: ['./src/**/*.html','./public/**/*.html','./src/**/*.tsx','*.ts','*.tsx'],
   theme: {
     fontFamily: {
       display: ['Helvetica Neue', 'Arial','sans-serif'],

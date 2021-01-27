@@ -5,7 +5,7 @@ import AuthService from "../services/auth.service"
 import MealService from "../services/meal.service"
 import OrderService from "../services/order.service"
 import RestaurantService from "../services/restaurant.service"
-import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent } from "./AppStateMachineSchema"
+import { AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent, LoginEvent, AddMealEvent, ModifyMealEvent, DeleteMealEvent, RegisterEvent, DeleteUserEvent, ModifyUserEvent, AddUserEvent, AddRestaurantEvent, ModifyRestaurantEvent, DeleteRestaurantEvent, FacebookAuthEvent, BlockUserEvent } from "./AppStateMachineSchema"
 import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
@@ -252,7 +252,24 @@ export const createAppStateMachine = (currentUser?: User) =>
           MEALS: 'meals_fetching',
           USERS: 'users_fetching',
           RESTAURANTS: 'restaurants_fetching',
-          ORDERS: 'orders_fetching'
+          ORDERS: 'orders_fetching',
+          BLOCK_USER: 'users_block'
+        }
+      },
+      users_block: {
+        invoke: {
+          id: 'block-user',
+          src: 'blockUser',
+          onDone: {
+            target: 'users_fetching',
+            actions: (context,event) => {
+              message.success(event.data.data, 2)
+            }
+          },
+          onError: {
+            target: 'users',
+            actions: (context, event) => message.error(event.data.response.data.message, 2)
+          }
         }
       },
       users_delete_user: {
@@ -474,6 +491,9 @@ export const createAppStateMachine = (currentUser?: User) =>
       },
       deleteUser: (context, event) => {
         return UserService.deleteUser((event as DeleteUserEvent).payload.id);
+      },
+      blockUser:(context,event) => {
+        return UserService.blockUser((event as BlockUserEvent).payload.id);
       },
       modifyUser: (context, event) => {
         return UserService.modifyUser((event as ModifyUserEvent).payload, AuthService.getCurrentUserId());

@@ -21,6 +21,14 @@ class UserService {
       headers: authHeader() 
     });
   }
+  blockUser(id:number) {
+    return axios.post(API_URL + 'blockUser',{}, { 
+      params: {
+        userId: id
+      },
+      headers: authHeader() 
+    });
+  }
 
   addUser(values: ModifyUserProps) {
     return axios.post(API_URL+'addUser',values,{

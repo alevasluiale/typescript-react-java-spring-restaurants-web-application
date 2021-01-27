@@ -12,7 +12,23 @@ import { Meal } from "../models/Meal";
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { AgGridReact } from 'ag-grid-react';
-
+import { PlusCircleOutlined } from '@ant-design/icons';
+import {GridReadyEvent} from 'ag-grid-community';
+import Meals from "./meals.component";
+function getLatestOrderStatus(orderStatuses: Array<{
+  status: {
+    name: string
+  }
+  date: Date
+}>) {
+  let idx = 0;
+  for (let i = 1; i < orderStatuses.length; i++) {
+    if (orderStatuses[i].date.getTime() < orderStatuses[idx].date.getTime()) {
+      idx = i;
+    }
+  }
+  return orderStatuses[idx]
+}
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -40,6 +56,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const MealsCellRenderer: React.FC<any> = (props) => {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <div style={{ textAlign: 'left' }} className="-mt-10">
+      <Modal
+        className=" mx-auto"
+        visible={visible}
+        title={"Meals for order with id " + props.data.id}
+        okText="Ok"
+        closable
+        cancelButtonProps={{ style: { display: 'none' } }}
+        onOk={() => setVisible(false)}
+        onCancel={() => setVisible(false)}
+      >
+        <Meals
+          canAdd={false}
+          deleteMeal={(id: number) => { }}
+          modifyMeal={(meal: Meal) => { }}
+          addMeal={(meal: Meal) => { }}
+          meals={props.data.orderMeals.map((meal: any) => {
+            return {
+              id: meal.meal.id,
+              name: meal.meal.name,
+              description: meal.meal.description,
+              price: meal.meal.price,
+              quantity: meal.quantity
+            }
+          })} />
+      </Modal>
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Open meals"
+        onClick={() => setVisible(true)}
+      ><PlusCircleOutlined className="my-auto mx-auto" /></Button>
+    </div>
+  )
+}
 const columnDefs = [
   {
     headerName: "ID",
@@ -56,7 +111,9 @@ const columnDefs = [
   },
   {
     headerName: "Date placed",
-    field: "date",
+    valueGetter: function (params: any) {
+      return new Date(params.data.date).toLocaleString('en-GB')
+    },
     sortable: true,
     filter: true,
     resizable: true,
@@ -79,6 +136,59 @@ const columnDefs = [
       resetButton: true,
       closeOnApply: true
     }
+  },
+  {
+    headerName: "Restaurant",
+    valueGetter: function (params: any) {
+      return params.data.restaurants[0].name
+    },
+    sortable: true,
+    filter: true,
+    resizable: true,
+    width: 150,
+    filterParams: {
+      applyButton: true,
+      resetButton: true,
+      closeOnApply: true
+    }
+  },
+  {
+    headerName: "Status",
+    valueGetter: function (params: any) {
+      return getLatestOrderStatus(params.data.orderStatuses).status.name
+    },
+    sortable: true,
+    filter: true,
+    resizable: true,
+    width: 150,
+    filterParams: {
+      applyButton: true,
+      resetButton: true,
+      closeOnApply: true
+    }
+  },
+  {
+    headerName: "Last modified",
+    valueGetter: function (params: any) {
+      return new Date(getLatestOrderStatus(params.data.orderStatuses).date).toLocaleString('en-GB')
+    },
+    sortable: true,
+    filter: true,
+    resizable: true,
+    width: 150,
+    filterParams: {
+      applyButton: true,
+      resetButton: true,
+      closeOnApply: true
+    }
+  },
+  {
+    headerName: "Meals",
+    maxWidth: 100,
+    cellRenderer: 'mealsCellRenderer',
+    sortable: true,
+    filter: true,
+    resizable: true
   }
 ]
 const ModifyModal: React.FC<{
@@ -150,20 +260,6 @@ const Orders: React.FC<{
 
   const classes = useStyles();
 
-  function getLatestOrderStatus(orderStatuses: Array<{
-    status: {
-      name: string
-    }
-    date: Date
-  }>) {
-    let idx = 0;
-    for (let i = 1; i < orderStatuses.length; i++) {
-      if (orderStatuses[i].date.getTime() < orderStatuses[idx].date.getTime()) {
-        idx = i;
-      }
-    }
-    return orderStatuses[idx]
-  }
   const [modify, setModify] = useState({
     visible: false,
     id: 0,
@@ -232,13 +328,18 @@ const Orders: React.FC<{
           </Form>
         )}
       </Formik>
-      <AgGridReact
-        columnDefs={columnDefs}>
-        rowData={orders}
-        pagination={true}
-        paginationPageSize={24}
-        rowSelection="single"
-      </AgGridReact>
+      <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
+        <AgGridReact
+          columnDefs={columnDefs}
+          rowData={orders}
+          pagination={true}
+          paginationPageSize={24}
+          onGridReady={(event:GridReadyEvent) => event.api.sizeColumnsToFit()}
+          rowSelection="single"
+          frameworkComponents={{ mealsCellRenderer: MealsCellRenderer }}
+        >
+        </AgGridReact>
+      </div>
       {orders?.map(order => (
         <Paper key={order.id} className={classes.paper}>
           <Grid container spacing={2} className="pb-4 unselectable">

@@ -170,7 +170,7 @@ const Restaurants: React.FC<{
               <Grid item>
                 <Typography variant="subtitle1">
                   <Button shape="round" type="primary" style={{ background: 'green' }}>
-                    Visit
+                    Browse
               </Button>
                 </Typography>
               </Grid>

@@ -225,6 +225,14 @@ export const App: React.FC = () => {
                 }
               })
             }}
+            blockUser={(id: number) => {
+              send({
+                type: 'BLOCK_USER',
+                payload: {
+                  id: id
+                }
+              })
+            }}
             modifyUser={(values: ModifyUserProps) => send({
               type: 'MODIFY_USER',
               payload: values
