@@ -53,6 +53,8 @@ export const createAppStateMachine = (currentUser?: User) =>
             actions: 'logOut'
           },
           USERS: 'users_fetching',
+          LOGIN_PAGE: 'login_page',
+          SIGN_UP: 'sign_up',
           MEALS: 'meals_fetching',
           HOME: 'home',
           ORDERS: 'orders_fetching',
@@ -135,7 +137,11 @@ export const createAppStateMachine = (currentUser?: User) =>
             target: 'signed_in',
             actions: assign({
               currentUser: (context, event) => {
-                message.success('User registred with success', 2)
+                if(event.data.data === "Confirmation email was sent!")
+                {
+                  message.success('Confirmation email was sent!', 2)
+                  return undefined;
+                }
                 localStorage.setItem('user', JSON.stringify(event.data.data))
                 return event.data.data
               }

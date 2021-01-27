@@ -51,7 +51,7 @@ const Login: React.FC<LoginProps> = ({ onLogin,onFacebookAuth }) => {
               <div className="form-group">
                 <FacebookLogin
                   appId="1788569767990308"
-                  autoLoad={true}
+                  autoLoad={false}
                   fields="name,email,picture"
                   callback={(response: any) =>  onFacebookAuth(response.name,response.email,response.picture.data.url)}
                   typeButton="primary"
