@@ -26,6 +26,17 @@ function getLatestOrderStatus(orderStatuses: Array<{
   }
   return orderStatuses[idx]
 }
+
+function compareOrderStatus(order1: any, order2: any) {
+  
+    const d1 = new Date(order1.date)
+    const d2 = new Date(order2.date)
+    if (d1.getTime() > d2.getTime()) {
+      return +1
+    }
+    else return -1
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -57,7 +68,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
   if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PLACED") {
     if (AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
       return (<Popconfirm title="Are you sure you want to cancel this order?"
-        onConfirm={() => modifyOrder(props.data.id,"CANCELED")}
+        onConfirm={() => modifyOrder(props.data.id, "CANCELED")}
       >
         <Button
           className="-mt-10 mx-auto"
@@ -67,7 +78,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       </Popconfirm>)
     }
     else return (<Popconfirm title="Are you sure you start processing this order?"
-      onConfirm={() => modifyOrder(props.data.id,"PROCESSING")}
+      onConfirm={() => modifyOrder(props.data.id, "PROCESSING")}
     >
       <Button
         className="-mt-10 mx-auto"
@@ -77,9 +88,9 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     </Popconfirm>)
   }
   else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PROCESSING" &&
-  AuthService.getCurrentUser().roles[0] !== "ROLE_USER")  {
+    AuthService.getCurrentUser().roles[0] !== "ROLE_USER") {
     return (<Popconfirm title="Are you sure you finished this order?"
-      onConfirm={() => modifyOrder(props.data.id,"IN_ROUTE")}
+      onConfirm={() => modifyOrder(props.data.id, "IN_ROUTE")}
     >
       <Button
         className="-mt-10 mx-auto"
@@ -89,9 +100,9 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     </Popconfirm>)
   }
   else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "IN_ROUTE" &&
-  AuthService.getCurrentUser().roles[0] !== "ROLE_USER") {
+    AuthService.getCurrentUser().roles[0] !== "ROLE_USER") {
     return (<Popconfirm title="Are you sure you have delivered this order?"
-      onConfirm={() => modifyOrder(props.data.id,"DELIVERED")}
+      onConfirm={() => modifyOrder(props.data.id, "DELIVERED")}
     >
       <Button
         className="-mt-10 mx-auto"
@@ -101,9 +112,9 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     </Popconfirm>)
   }
   else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "DELIVERED" &&
-  AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
+    AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
     return (<Popconfirm title="Are you sure you have received this order?"
-      onConfirm={() => modifyOrder(props.data.id,"RECEIVED")}
+      onConfirm={() => modifyOrder(props.data.id, "RECEIVED")}
     >
       <Button
         className="-mt-10 mx-auto"
@@ -155,9 +166,47 @@ const MealsCellRenderer: React.FC<any> = (props) => {
   )
 }
 
+const StatusHistoryCellRenderer: React.FC<any> = (props) => {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <div style={{ textAlign: 'left' }} className="-mt-10">
+      <Modal
+        className=" mx-auto"
+        visible={visible}
+        title={"Status History for order with id " + props.data.id}
+        okText="Ok"
+        closable
+        cancelButtonProps={{ style: { display: 'none' } }}
+        onOk={() => setVisible(false)}
+        onCancel={() => setVisible(false)}
+      >
+        <div className="border-b border-t" style={{ height: "150px", overflow: 'auto' }}>
+          {props.data.orderStatuses.sort(compareOrderStatus).map((orderStatus: any) => (
+            <div className="d-flex justify-content-between">
+              <div className="flex w-2/3">
+                <span className="my-auto ml-2">{new Date(orderStatus.date).toLocaleString('en-GB')}</span>
+              </div>
+              <div className="flex w-1/3">
+                <span className="my-auto ml-2">{orderStatus.status.name}</span>
+              </div>
+            </div>))}
+        </div>
+
+      </Modal>
+      <Button
+        className="-mt-10 mx-auto"
+        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        title="Open meals"
+        onClick={() => setVisible(true)}
+      >Show</Button>
+    </div>
+  )
+}
+
 const Orders: React.FC<{
   orders?: [Order]
-  modifyOrder: (id: number,status: string) => void
+  modifyOrder: (id: number, status: string) => void
 }> = ({ orders, modifyOrder }) => {
 
   const classes = useStyles();
@@ -268,6 +317,14 @@ const Orders: React.FC<{
       sortable: true,
       filter: true,
       resizable: true
+    },
+    {
+      headerName: "History",
+      maxWidth: 100,
+      cellRenderer: 'statusHistoryCellRenderer',
+      sortable: true,
+      filter: true,
+      resizable: true
     }
   ]
 
@@ -277,12 +334,15 @@ const Orders: React.FC<{
       <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
         <AgGridReact
           columnDefs={columnDefs}
-          rowData={orders}
+          rowData={orders ?? []}
           pagination={true}
           paginationPageSize={24}
           onGridReady={(event: GridReadyEvent) => event.api.sizeColumnsToFit()}
           rowSelection="single"
-          frameworkComponents={{ mealsCellRenderer: MealsCellRenderer, operationCellRenderer: OperationCellRenderer }}
+          frameworkComponents={{
+            statusHistoryCellRenderer: StatusHistoryCellRenderer,
+            mealsCellRenderer: MealsCellRenderer, operationCellRenderer: OperationCellRenderer
+          }}
         >
         </AgGridReact>
       </div>
