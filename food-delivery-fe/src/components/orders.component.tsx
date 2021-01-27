@@ -210,7 +210,7 @@ const Orders: React.FC<{
     {
       headerName: "Restaurant",
       valueGetter: function (params: any) {
-        return params.data.restaurants[0].name
+        return params.data.restaurants ? params.data.restaurants[0].name : null
       },
       sortable: true,
       filter: true,
