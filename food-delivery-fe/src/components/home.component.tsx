@@ -4,7 +4,7 @@ const Home: React.FC = () => {
 
     return (
       <div className="container" >
-        <h3>Meals</h3>
+        <img alt="" src="food.jpg"></img>
       </div>
     );
 }

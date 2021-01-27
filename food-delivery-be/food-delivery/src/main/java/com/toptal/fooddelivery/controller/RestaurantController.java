@@ -2,13 +2,13 @@ package com.toptal.fooddelivery.controller;
 
 
 import com.toptal.fooddelivery.model.Meal;
+import com.toptal.fooddelivery.model.Order;
 import com.toptal.fooddelivery.model.Restaurant;
 import com.toptal.fooddelivery.model.User;
-import com.toptal.fooddelivery.repository.MealRepository;
-import com.toptal.fooddelivery.repository.RestaurantRepository;
-import com.toptal.fooddelivery.repository.UserRepository;
+import com.toptal.fooddelivery.repository.*;
 import com.toptal.fooddelivery.request.RestaurantRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
+import com.toptal.fooddelivery.response.OrderResponseNoRestaurant;
 import com.toptal.fooddelivery.response.RestaurantResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +30,19 @@ public class RestaurantController {
     private MealRepository mealRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderMealRepository orderMealRepository;
+
     @GetMapping("/getAll")
     List<RestaurantResponse> getAllRestaurants() {
         return restaurantRepository.findBy();
     }
-
+    @GetMapping("/getAllForOwner")
+    List<RestaurantResponse> getAllRestaurantsOfOwner(@RequestParam("userId") Long userId) {
+        return restaurantRepository.findByUsersId(userId);
+    }
     @PostMapping("/addRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     public ResponseEntity<?> addRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest,@RequestParam("userId") Long userId) {
@@ -111,6 +119,18 @@ public class RestaurantController {
                     .badRequest()
                     .body(new MessageResponse("Error: Restaurant does not exists!"));
         }
+        Restaurant restaurant = restaurantRepository.getOne(restaurantId);
+        for(Meal meal : restaurant.getMeals()) {
+            orderMealRepository.deleteByMealId(meal.getId());
+            restaurant.removeMeal(meal);
+        }
+        List<OrderResponseNoRestaurant> orders = orderRepository.findByRestaurantsId(restaurantId);
+        for(OrderResponseNoRestaurant order:orders) {
+            orderRepository.getOne(order.getId()).removeRestaurant(restaurant);
+        }
+
+        User user = userRepository.findByRestaurantsId(restaurantId);
+        user.removeRestaurant(restaurant);
 
         restaurantRepository.deleteById(restaurantId);
         return ResponseEntity.ok("Restaurant deleted successfully");

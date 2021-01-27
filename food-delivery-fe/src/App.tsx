@@ -83,7 +83,7 @@ export const App: React.FC = () => {
               <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
                 send({ type: 'LOG_OUT' })
               }}>
-                LogOut
+                Log out
                 </span>
             </li>
           </div>

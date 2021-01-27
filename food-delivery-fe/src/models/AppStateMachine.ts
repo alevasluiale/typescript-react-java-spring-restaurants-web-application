@@ -10,7 +10,7 @@ import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
   Machine<AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent>({
-    initial: 'home',
+    initial: currentUser ? 'check_user_is_authenticated' : 'login_page',
     id: 'app-state-machine',
     context: {
       currentUser: currentUser
@@ -22,7 +22,7 @@ export const createAppStateMachine = (currentUser?: User) =>
           src: 'authenticateUser',
           onDone: 'signed_in',
           onError: {
-            target: 'home',
+            target: 'login_page',
             actions: assign({
               currentUser: (context) => {
                 localStorage.removeItem("user")

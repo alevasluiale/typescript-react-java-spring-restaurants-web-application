@@ -166,4 +166,5 @@ public class User {
     public void addRestaurant(Restaurant restaurant) {
         this.restaurants.add(restaurant);
     }
+    public void removeRestaurant(Restaurant restaurant) {this.restaurants.remove(restaurant);}
 }

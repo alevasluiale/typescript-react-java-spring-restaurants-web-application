@@ -106,4 +106,7 @@ public class Order {
     public void addOrderStatus(OrderStatus status) {
         this.orderStatuses.add(status);
     }
+    public void removeRestaurant(Restaurant rr) {
+        this.restaurants.remove(rr);
+    }
 }

@@ -6,10 +6,18 @@ const API_URL = `${process.env.REACT_APP_API_URL}/restaurants/`;
 
 class RestaurantService {
   getRestaurants() {
-    return axios
+    if(AuthService.getCurrentUser().roles[0] === "ROLE_USER" || AuthService.getCurrentUser().roles[0] === "ROLE_ADMIN")
+    {return axios
       .get(API_URL+ 'getAll',{
         headers: authHeader() 
-      })
+      })}
+    else return  axios
+    .get(API_URL+ 'getAllForOwner',{
+      params: {
+        userId: AuthService.getCurrentUserId()
+      },
+      headers: authHeader() 
+    })
   }
 
   addRestaurant(restaurant: Restaurant,mealsIds:Array<Number>) {

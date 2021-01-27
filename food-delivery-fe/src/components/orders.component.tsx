@@ -72,7 +72,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       >
         <Button
           className="-mt-10 mx-auto"
-          style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+          style={{ cursor: 'pointer', width: '100%', height: "100%" }}
           title="Cancel order"
         >Cancel</Button>
       </Popconfirm>)
@@ -82,7 +82,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     >
       <Button
         className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Process order"
       >Process</Button>
     </Popconfirm>)
@@ -94,7 +94,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     >
       <Button
         className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Send In route"
       >Send</Button>
     </Popconfirm>)
@@ -106,7 +106,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     >
       <Button
         className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Deliver order"
       >Deliver</Button>
     </Popconfirm>)
@@ -118,7 +118,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     >
       <Button
         className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Mark as received"
       >Mark Received</Button>
     </Popconfirm>)
@@ -157,8 +157,9 @@ const MealsCellRenderer: React.FC<any> = (props) => {
           })} />
       </Modal>
       <Button
-        className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        type="primary"
+        className="-mt-10 mx-auto rounded"
+        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Open meals"
         onClick={() => setVisible(true)}
       >Show</Button>
@@ -333,6 +334,7 @@ const Orders: React.FC<{
       <h3 style={{ color: 'blue' }}>Orders</h3>
       <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
         <AgGridReact
+          rowHeight={35}
           columnDefs={columnDefs}
           rowData={orders ?? []}
           pagination={true}

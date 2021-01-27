@@ -12,4 +12,5 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
 
     List<OrderResponseNoRestaurant> findByUsersId(Long id);
     List<OrderResponseNoRestaurant> findByRestaurantsId(Long id);
+
 }
