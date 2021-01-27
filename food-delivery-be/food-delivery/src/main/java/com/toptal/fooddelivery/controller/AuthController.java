@@ -5,7 +5,10 @@ import com.toptal.fooddelivery.enums.TypeEnum;
 import com.toptal.fooddelivery.jwtutil.JwtUtils;
 import com.toptal.fooddelivery.model.*;
 import com.toptal.fooddelivery.repository.EmailConfirmationTokenRepository;
+import com.toptal.fooddelivery.repository.RoleRepository;
+import com.toptal.fooddelivery.repository.TypeRepository;
 import com.toptal.fooddelivery.repository.UserRepository;
+import com.toptal.fooddelivery.request.FacebookRequest;
 import com.toptal.fooddelivery.request.LoginRequest;
 import com.toptal.fooddelivery.request.SignupRequest;
 import com.toptal.fooddelivery.response.JwtResponse;
@@ -19,7 +22,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -43,7 +50,10 @@ public class AuthController {
     EmailSenderService emailSenderService;
     @Autowired
     PasswordEncoder encoder;
-
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    TypeRepository typeRepository;
     @Autowired
     JwtUtils jwtUtils;
 
@@ -58,6 +68,17 @@ public class AuthController {
     }
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + loginRequest.getUsername()));
+
+        if(user.isEnabled() == false) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Account was not verified yet"));
+        }
+
+        if(user.isBlocked() == true) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Account was blocked"));
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -75,6 +96,7 @@ public class AuthController {
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles));
+
     }
 
     @PostMapping("/signup")
@@ -100,8 +122,8 @@ public class AuthController {
         Set<Role> roles = new HashSet<Role>();
         Set<Type> types = new HashSet<Type>();
 
-        roles.add(new Role(RoleEnum.ROLE_USER));
-        types.add(new Type(TypeEnum.EMAIL));
+        roles.add(roleRepository.findByName(RoleEnum.ROLE_USER));
+        types.add(typeRepository.findByName(TypeEnum.EMAIL));
 
         user.setRoles(roles);
         user.setTypes(types);
@@ -119,8 +141,7 @@ public class AuthController {
                 "http://localhost:8080/auth/confirm-account?token="+confirmationToken.getConfirmationToken());
 
         emailSenderService.sendEmail(mailMessage);
-        return ResponseEntity.ok("Verify email");
-        //return authenticateUser(new LoginRequest(signUpRequest.getUsername(),signUpRequest.getPassword()));
+        return ResponseEntity.ok("Confirmation email was sent!");
     }
 
     @RequestMapping(value="/confirm-account",method = {RequestMethod.GET,RequestMethod.POST})
@@ -133,5 +154,43 @@ public class AuthController {
             return ResponseEntity.ok("Account was verified successfully.");
         }
         else return ResponseEntity.badRequest().body(new MessageResponse("Error: The link is invalid or broken!"));
+    }
+
+
+    @PostMapping("/facebook-signIn")
+    public ResponseEntity<?> signInWithFacebook(@RequestBody FacebookRequest userDetails) {
+
+        User currentUser = userRepository.findByEmailIgnoreCase(userDetails.getEmail());
+        if(currentUser == null) {
+            User user = new User();
+            user.setUsername(userDetails.getUsername());
+            user.setEmail(userDetails.getEmail());
+            user.setPhotoUrl(userDetails.getPhotoUrl());
+            user.setBlocked(false);
+            Set<Role> roles = new HashSet<Role>();
+            Set<Type> types = new HashSet<Type>();
+
+            roles.add(roleRepository.findByName(RoleEnum.ROLE_USER));
+            types.add(typeRepository.findByName(TypeEnum.FACEBOOK));
+
+            user.setRoles(roles);
+            user.setTypes(types);
+            user.setEnabled(true);
+            user.setPassword(encoder.encode("facebookPass"));
+            currentUser = userRepository.save(user);
+        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(currentUser.getUsername(), "facebookPass"));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsImpl currentUserDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = currentUserDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                currentUserDetails.getId(),
+                currentUserDetails.getUsername(),
+                currentUserDetails.getEmail(),
+                roles));
     }
 }

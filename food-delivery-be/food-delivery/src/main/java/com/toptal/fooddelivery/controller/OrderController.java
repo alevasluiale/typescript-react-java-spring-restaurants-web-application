@@ -1,18 +1,23 @@
 package com.toptal.fooddelivery.controller;
 
 
+import com.toptal.fooddelivery.enums.RoleEnum;
 import com.toptal.fooddelivery.enums.StatusEnum;
 import com.toptal.fooddelivery.model.*;
 import com.toptal.fooddelivery.repository.*;
 import com.toptal.fooddelivery.request.MealRequest;
 import com.toptal.fooddelivery.request.OrderRequest;
+import com.toptal.fooddelivery.request.OrderStatusRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
 import com.toptal.fooddelivery.response.OrderResponse;
+import com.toptal.fooddelivery.response.OrderResponseNoRestaurant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -30,12 +35,34 @@ public class OrderController {
     @Autowired
     private OrderMealRepository orderMealRepository;
     @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private StatusRepository statusRepository;
     @GetMapping("/getAll")
     List<OrderResponse> getAllOrders() {
         return orderRepository.findBy();
     }
 
+    @GetMapping("/getAllForUser")
+    List<OrderResponse> getAllForUser(@RequestParam("userId") Long userId) {
+        return orderRepository.findByUsersId(userId);
+    }
+    @GetMapping("/getAllForOwner")
+    List<OrderResponseNoRestaurant> getAllForOwner(@RequestParam("userId") Long userId) throws Exception {
+        User user = userRepository.getOne(userId);
+        if(user == null || !user.getRoles().contains(roleRepository.findByName(RoleEnum.ROLE_OWNER))) {
+            throw new Exception("User is not owner");
+        }
+        List<OrderResponseNoRestaurant> response = new ArrayList<>();
+        for(Restaurant rr : user.getRestaurants()) {
+            response.addAll(orderRepository.findByRestaurantsId(rr.getId()));
+        }
+        return response;
+    }
     @PostMapping("/addOrder")
     public ResponseEntity<?> addOrder(@Valid @RequestBody OrderRequest orderRequest) {
 
@@ -46,11 +73,21 @@ public class OrderController {
         }
         Order order = new Order();
         order.setDate(new Date());
-        order.setTotalAmount(orderRequest.getAmount());
+
+        Set<User> users = new HashSet<>();
+        users.add(userRepository.getOne(orderRequest.getUserId()));
+
+        order.setUsers(users);
 
         Set<Restaurant> restaurantSet = new HashSet<Restaurant>();
-        restaurantSet.add(orderRequest.getRestaurant());
+        restaurantSet.add(restaurantRepository.getOne(orderRequest.getRestaurantId()));
         order.setRestaurants(restaurantSet);
+
+        double totalAmount = 0;
+        for(MealRequest mealRequest : orderRequest.getMeals()) {
+            totalAmount += mealRequest.getQuantity()*mealRequest.getPrice();
+        }
+        order.setTotalAmount(totalAmount);
 
         Order savedOrder = orderRepository.save(order);
 
@@ -65,7 +102,7 @@ public class OrderController {
             orderMeal.setQuantity(mealRequest.getQuantity());
             orderMealRepository.save(orderMeal);
         }
-        Status status = statusRepository.findByName(StatusEnum.RECEIVED);
+        Status status = statusRepository.findByName(StatusEnum.PLACED);
         OrderStatus orderStatus = new OrderStatus(new OrderStatusPK(savedOrder.getId(),status.getId()));
         orderStatus.setOrder(savedOrder);
         orderStatus.setStatus(status);
@@ -74,7 +111,65 @@ public class OrderController {
 
         return ResponseEntity.ok("Order added successfully");
     }
+    @PostMapping("/updateOrderStatus")
+    public ResponseEntity<?> updateOrderStatus(@Valid @RequestBody OrderStatusRequest request) {
+        Order order = orderRepository.getOne(request.getOrderId());
+        if(order == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Order doesn't exist"));
+        }
+        Status status = null;
+        if(request.getStatus().equals(StatusEnum.CANCELED.name())) {
+            if(order.getOrderStatuses().size() == 1
+                    && order.getOrderStatuses()
+                    .contains(orderStatusRepository.findByOrderAndStatus(order,statusRepository.findByName(StatusEnum.PLACED)))) {
+                status = statusRepository.findByName(StatusEnum.CANCELED);
+            }
+            else return ResponseEntity.badRequest().body(new MessageResponse("Error: Only placed orders can be canceled"));
+        }
+        else if(request.getStatus().equals(StatusEnum.PROCESSING.name())) {
+            if(order.getOrderStatuses().size() == 1
+                    && order.getOrderStatuses()
+                    .contains(orderStatusRepository.findByOrderAndStatus(order,statusRepository.findByName(StatusEnum.PLACED)))) {
+                status = statusRepository.findByName(StatusEnum.PROCESSING);
+            }
+            else return ResponseEntity.badRequest().body(new MessageResponse("Error: Only placed orders can be processed"));
+        }
+        else if(request.getStatus().equals(StatusEnum.IN_ROUTE.name())) {
+            if(order.getOrderStatuses().size() == 2
+                    && order.getOrderStatuses()
+                    .contains(orderStatusRepository.findByOrderAndStatus(order,statusRepository.findByName(StatusEnum.PROCESSING)))) {
+                status = statusRepository.findByName(StatusEnum.IN_ROUTE);
+            }
+            else return ResponseEntity.badRequest().body(new MessageResponse("Error: Only processed orders can be shipped"));
+        }
+        else if(request.getStatus().equals(StatusEnum.DELIVERED.name())) {
+            if(order.getOrderStatuses().size() == 3
+                    && order.getOrderStatuses()
+                    .contains(orderStatusRepository.findByOrderAndStatus(order,statusRepository.findByName(StatusEnum.IN_ROUTE)))) {
+                status = statusRepository.findByName(StatusEnum.DELIVERED);
+            }
+            else return ResponseEntity.badRequest().body(new MessageResponse("Error: Only in route orders can be delivered"));
+        }
+        else if(request.getStatus().equals(StatusEnum.RECEIVED.name()))  {
+            if(order.getOrderStatuses().size() == 4
+                    && order.getOrderStatuses()
+                    .contains(orderStatusRepository.findByOrderAndStatus(order,statusRepository.findByName(StatusEnum.DELIVERED)))) {
+                status = statusRepository.findByName(StatusEnum.RECEIVED);
+            }
+            else return ResponseEntity.badRequest().body(new MessageResponse("Error: Only delivered orders can be received"));
+        }
 
+        OrderStatus orderStatus = new OrderStatus(new OrderStatusPK(order.getId(),status.getId()));
+        orderStatus.setOrder(order);
+        orderStatus.setStatus(status);
+        orderStatus.setDate(new Date());
+        orderStatusRepository.save(orderStatus);
+
+        order.addOrderStatus(orderStatus);
+        orderRepository.save(order);
+
+        return ResponseEntity.ok("Status updated with success!");
+    }
 //    @PostMapping("/updateOrder")
 //    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
 //    public ResponseEntity<?> updateOrder(@Valid @RequestBody OrderRequest orderRequest, @RequestParam(name="orderId") Long orderId) {

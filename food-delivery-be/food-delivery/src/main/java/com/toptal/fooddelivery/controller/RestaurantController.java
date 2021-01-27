@@ -3,8 +3,10 @@ package com.toptal.fooddelivery.controller;
 
 import com.toptal.fooddelivery.model.Meal;
 import com.toptal.fooddelivery.model.Restaurant;
+import com.toptal.fooddelivery.model.User;
 import com.toptal.fooddelivery.repository.MealRepository;
 import com.toptal.fooddelivery.repository.RestaurantRepository;
+import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.RestaurantRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
 import com.toptal.fooddelivery.response.MessageResponse;
@@ -26,6 +28,8 @@ public class RestaurantController {
     private RestaurantRepository restaurantRepository;
     @Autowired
     private MealRepository mealRepository;
+    @Autowired
+    private UserRepository userRepository;
     @GetMapping("/getAll")
     List<Restaurant> getAllRestaurants() {
         return restaurantRepository.findAll();
@@ -33,7 +37,7 @@ public class RestaurantController {
 
     @PostMapping("/addRestaurant")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
-    public ResponseEntity<?> addRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest) {
+    public ResponseEntity<?> addRestaurant(@Valid @RequestBody RestaurantRequest restaurantRequest,@RequestParam("userId") Long userId) {
         if(restaurantRepository.existsByName(restaurantRequest.getName())){
             return ResponseEntity
                     .badRequest()
@@ -56,9 +60,11 @@ public class RestaurantController {
             }
         }
         restaurant.setMeals(meals);
+        User user = userRepository.getOne(userId);
 
-        restaurantRepository.save(restaurant);
+        user.addRestaurant(restaurantRepository.save(restaurant));
 
+        userRepository.save(user);
         return ResponseEntity.ok("Restaurant added successfully");
     }
 

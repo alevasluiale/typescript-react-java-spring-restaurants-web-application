@@ -43,6 +43,12 @@ public class User {
     @Column(columnDefinition = "bit default 0")
     private boolean enabled;
 
+    @Column(columnDefinition = "varchar(500) default ''")
+    private String photoUrl;
+
+    @Column(columnDefinition = "bit default 0")
+    private boolean blocked;
+
     @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinTable(name ="User_Type",
             joinColumns = {@JoinColumn(name="user_id")},
@@ -55,7 +61,19 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name="role_id")})
     private Set<Role> roles;
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinTable(name ="User_Restaurant",
+            joinColumns = {@JoinColumn(name="user_id")},
+            inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
+    private Set<Restaurant> restaurants = new HashSet<Restaurant>();
 
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
 
     public User() {
     }
@@ -75,6 +93,22 @@ public class User {
         this.types = types;
         this.roles = roles;
         this.enabled = enabled;
+    }
+
+    public Set<Restaurant> getRestaurants() {
+        return restaurants;
+    }
+
+    public void setRestaurants(Set<Restaurant> restaurants) {
+        this.restaurants = restaurants;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public boolean isEnabled() {
@@ -133,4 +167,7 @@ public class User {
         this.roles = roles;
     }
 
+    public void addRestaurant(Restaurant restaurant) {
+        this.restaurants.add(restaurant);
+    }
 }

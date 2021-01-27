@@ -27,6 +27,8 @@ public class Restaurant {
             inverseJoinColumns = {@JoinColumn(name="meal_id")})
     private Set<Meal> meals;
 
+    @ManyToMany(mappedBy="restaurants")
+    private Set<User> users;
     public Restaurant() {}
 
     public Restaurant(Long id, @NotBlank @Size(max = 100) String name, @NotBlank @Size(max = 250) String description) {
@@ -40,6 +42,14 @@ public class Restaurant {
         this.name = name;
         this.description = description;
         this.meals = meals;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public Set<Meal> getMeals() {

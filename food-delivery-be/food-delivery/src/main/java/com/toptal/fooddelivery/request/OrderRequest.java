@@ -10,30 +10,39 @@ public class OrderRequest {
 
     private List<MealRequest> meals;
     private Date date;
-    private Restaurant restaurant;
-    private double amount;
+    private Long restaurantId;
+    private Long userId;
+    private double totalAmount;
     public OrderRequest() {
     }
 
-    public OrderRequest(List<MealRequest> meals, Date date, double totalAmount, Restaurant restaurant) {
+    public OrderRequest(List<MealRequest> meals, Date date, double totalAmount, Long restaurantId) {
         this.meals = meals;
         this.date = date;
-        this.restaurant = restaurant;
+        this.restaurantId = restaurantId;
     }
 
-    public OrderRequest(List<MealRequest> meals, Date date, Restaurant restaurant, double amount) {
+    public OrderRequest(List<MealRequest> meals, Date date, Long restaurantId, double totalAmount) {
         this.meals = meals;
         this.date = date;
-        this.restaurant = restaurant;
-        this.amount = amount;
+        this.restaurantId = restaurantId;
+        this.totalAmount = totalAmount;
     }
 
-    public double getAmount() {
-        return amount;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public List<MealRequest> getMeals() {
@@ -52,11 +61,11 @@ public class OrderRequest {
         this.date = date;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
+    public Long getRestaurantId() {
+        return restaurantId;
     }
 
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
+    public void setRestaurantId(Long restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }

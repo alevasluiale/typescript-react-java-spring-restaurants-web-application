@@ -7,7 +7,7 @@ import com.toptal.fooddelivery.model.Status;
 import java.util.Date;
 import java.util.Set;
 
-public interface OrderResponeNoRestaurant {
+public interface OrderResponseNoRestaurant {
     Long getId();
     Date getDate();
     double getTotalAmount();

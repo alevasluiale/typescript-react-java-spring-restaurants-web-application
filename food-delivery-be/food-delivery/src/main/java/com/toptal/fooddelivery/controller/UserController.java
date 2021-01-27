@@ -1,8 +1,12 @@
 package com.toptal.fooddelivery.controller;
 
 import com.toptal.fooddelivery.enums.RoleEnum;
+import com.toptal.fooddelivery.enums.TypeEnum;
 import com.toptal.fooddelivery.model.Role;
+import com.toptal.fooddelivery.model.Type;
 import com.toptal.fooddelivery.model.User;
+import com.toptal.fooddelivery.repository.RoleRepository;
+import com.toptal.fooddelivery.repository.TypeRepository;
 import com.toptal.fooddelivery.repository.UserRepository;
 import com.toptal.fooddelivery.request.SignupRequest;
 import com.toptal.fooddelivery.request.UpdateUserRequest;
@@ -26,6 +30,11 @@ import java.util.Set;
 public class UserController {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    TypeRepository typeRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -58,8 +67,8 @@ public class UserController {
         Set<Role> roles = new HashSet<Role>();
         if(signUpRequest.getRole().equals(RoleEnum.ROLE_USER.name())
                 || signUpRequest.getRole().isEmpty()
-                || signUpRequest.getRole().isBlank()) roles.add(new Role(RoleEnum.ROLE_USER));
-        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER.name())) roles.add(new Role(RoleEnum.ROLE_OWNER));
+                || signUpRequest.getRole().isBlank()) roles.add(roleRepository.findByName(RoleEnum.ROLE_USER));
+        else if(signUpRequest.getRole().equals(RoleEnum.ROLE_OWNER.name())) roles.add(roleRepository.findByName(RoleEnum.ROLE_OWNER));
         else if(signUpRequest.getRole().equals(RoleEnum.ROLE_ADMIN.name())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin user cannot be created by other admin"));
         }
@@ -70,6 +79,10 @@ public class UserController {
         }
 
         user.setRoles(roles);
+
+        Set<Type> types = new HashSet<>();
+        types.add(typeRepository.findByName(TypeEnum.EMAIL));
+        user.setTypes(types);
         userRepository.save(user);
 
         return ResponseEntity.ok("User added successfully");
@@ -135,5 +148,27 @@ public class UserController {
             return ResponseEntity.ok("User updated successfully");
         }
         else return ResponseEntity.badRequest().body("User does not exist.");
+    }
+
+    @PostMapping("/blockUser")
+    public ResponseEntity<?> blockUser(@RequestParam("userId") Long userId) {
+        User user = userRepository.getOne(userId);
+        if(user.getRoles().contains(roleRepository.findByName(RoleEnum.ROLE_ADMIN))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Admin User with cannot be blocked"));
+
+        }
+        if(user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Error: User with "+userId.toString()+" doesn't exist"));
+        }
+        if(user.isBlocked() == false) {
+            user.setBlocked(true);
+            userRepository.save(user);
+            return ResponseEntity.ok("User was blocked successfully");
+        }
+        else {
+            user.setBlocked(false);
+            userRepository.save(user);
+            return ResponseEntity.ok("User was unblocked successfully");
+        }
     }
 }

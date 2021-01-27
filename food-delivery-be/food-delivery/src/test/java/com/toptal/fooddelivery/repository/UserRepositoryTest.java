@@ -1,2 +1,4 @@
-package com.toptal.fooddelivery.repository;public class UserRepositoryTest {
+package com.toptal.fooddelivery.repository;
+
+public class UserRepositoryTest {
 }

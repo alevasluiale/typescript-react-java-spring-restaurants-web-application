@@ -23,6 +23,11 @@ public class Order {
             inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
     private Set<Restaurant> restaurants = new HashSet<Restaurant>();
 
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
+    @JoinTable(name ="order_user",
+            joinColumns = {@JoinColumn(name="order_id")},
+            inverseJoinColumns = {@JoinColumn(name="user_id")})
+    private Set<User> users = new HashSet<User>();
 
     @OneToMany(mappedBy = "order")
     private Set<OrderStatus> orderStatuses = new HashSet<OrderStatus>();
@@ -49,6 +54,14 @@ public class Order {
         this.totalAmount = totalAmount;
         this.restaurants = restaurants;
         this.orderStatuses = orderStatuses;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public Set<OrderStatus> getOrderStatuses() {
@@ -91,5 +104,7 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-
+    public void addOrderStatus(OrderStatus status) {
+        this.orderStatuses.add(status);
+    }
 }

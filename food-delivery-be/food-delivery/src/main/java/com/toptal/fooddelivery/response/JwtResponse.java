@@ -1,5 +1,7 @@
 package com.toptal.fooddelivery.response;
 
+
+
 import java.util.List;
 
 public class JwtResponse {
