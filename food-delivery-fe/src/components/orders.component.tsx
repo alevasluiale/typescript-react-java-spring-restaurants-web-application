@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 const OperationCellRenderer: React.FC<any> = (props) => {
   const modifyOrder = props.colDef.cellRendererParams.modifyOrder
   if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PLACED") {
-    if (AuthService.getCurrentUser().roles[0].name === "ROLE_USER") {
+    if (AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
       return (<Popconfirm title="Are you sure you want to cancel this order?"
         onConfirm={() => modifyOrder(props.data.id,"CANCELED")}
       >
@@ -78,7 +78,8 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       >Process</Button>
     </Popconfirm>)
   }
-  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PROCESSING") {
+  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "PROCESSING" &&
+  AuthService.getCurrentUser().roles[0] !== "ROLE_USER")  {
     return (<Popconfirm title="Are you sure you finished this order?"
       onConfirm={() => modifyOrder(props.data.id,"IN_ROUTE")}
     >
@@ -89,7 +90,8 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       >Send</Button>
     </Popconfirm>)
   }
-  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "IN_ROUTE") {
+  else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "IN_ROUTE" &&
+  AuthService.getCurrentUser().roles[0] !== "ROLE_USER") {
     return (<Popconfirm title="Are you sure you have delivered this order?"
       onConfirm={() => modifyOrder(props.data.id,"DELIVERED")}
     >
@@ -101,7 +103,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
     </Popconfirm>)
   }
   else if (getLatestOrderStatus(props.data.orderStatuses).status.name === "DELIVERED" &&
-  AuthService.getCurrentUser().roles[0].name === "ROLE_USER") {
+  AuthService.getCurrentUser().roles[0] === "ROLE_USER") {
     return (<Popconfirm title="Are you sure you have received this order?"
       onConfirm={() => modifyOrder(props.data.id,"RECEIVED")}
     >
