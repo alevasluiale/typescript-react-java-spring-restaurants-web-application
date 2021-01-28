@@ -2,6 +2,7 @@ import React  from "react";
 import {Formik,Field,Form, ErrorMessage} from "formik";
 import FacebookLogin from 'react-facebook-login';
 import * as Yup from 'yup';
+import { Input } from "antd";
 interface RegisterProps {
   onRegister: (username: string,email:string, password: string) => void
   onFacebookAuth: (username: string,email:string,photoUrl:string)=>void
@@ -28,21 +29,37 @@ const Register: React.FC<RegisterProps> = ({onRegister,onFacebookAuth}) => {
           onRegister(values.username,values.email,values.password)
         }}
       >
-        {({errors,touched}) => (
+        {(props) => (
           <Form>
             <div className="form-group">
-              <label>Username</label>
-              <Field className="form-control mb-3" name="username"/>
+            <Input
+                  className="mb-2 rounded"
+                  value={props.values.username}
+                  placeholder="Username"
+                  name="username"
+                  onChange={(e:any) => props.setFieldValue('username',e.target.value)}
+                />
               <ErrorMessage className="alert alert-danger" name="username"/>
             </div>
             <div className="form-group">
-              <label>Email</label>
-              <Field className="form-control mb-3" name="email"/>
+            <Input
+                  className="mb-2 rounded"
+                  value={props.values.email}
+                  placeholder="Email"
+                  name="email"
+                  onChange={(e:any) => props.setFieldValue('email',e.target.value)}
+                />
               <ErrorMessage className="alert alert-danger" name="email"/>
             </div>
             <div className="form-group">
-              <label>Password</label>
-              <Field className="form-control" name="password" component="input" type="password"/>
+              <Input
+                  className="mb-2 rounded"
+                  value={props.values.password}
+                  placeholder="Password"
+                  name="password"
+                  type="password"
+                  onChange={(e:any) => props.setFieldValue('password',e.target.value)}
+                />
               <ErrorMessage className="alert alert-danger" name="password"/>
             </div>
 

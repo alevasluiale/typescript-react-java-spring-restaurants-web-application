@@ -1,14 +1,14 @@
-import React, {useState} from "react";
-import {Modal,Button} from 'antd';
+import React, { useState } from "react";
+import { Modal, Button, Input, Card } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
 import { Meal } from "../models/Meal";
-import {Formik,Form,Field,ErrorMessage} from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+const { Meta } = Card;
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ModifyModal: React.FC<{
-  modify:{
+  modify: {
     id: number
     name: string
     price: number
@@ -45,86 +45,27 @@ const ModifyModal: React.FC<{
     visible: boolean
   }
   setModify: () => void
-  modifyMeal: (values:Meal) => void
-}>=({modify,setModify,modifyMeal}) => {
+  modifyMeal: (values: Meal) => void
+}> = ({ modify, setModify, modifyMeal }) => {
   return (
     <Modal
-        title={'Modify meal '+ modify.name}
-        visible={modify.visible}
-        footer={[
-          <Button key="cancel" onClick={e=> setModify()}>
-              Cancel
+      title={'Modify meal ' + modify.name}
+      visible={modify.visible}
+      footer={[
+        <Button key="cancel" onClick={e => setModify()}>
+          Cancel
           </Button>,
-          <Button type="primary" form="modifyMealForm" key="submit" htmlType="submit">
-              Submit
+        <Button type="primary" form="modifyMealForm" key="submit" htmlType="submit">
+          Submit
           </Button>
-          ]}
-      >
-        <Formik 
-          initialValues= {{
-            id: modify.id,
-            name: modify.name,
-            description: modify.description,
-            price: modify.price
-          }}
-          validationSchema={
-            Yup.object().shape({
-              name: Yup.string().required("Required"),
-              description: Yup.string().required("Required"),
-              price: Yup.number().required("Required")
-            })
-          }
-          onSubmit={(values)=> modifyMeal(values)}
-        >
-          { props => (
-            <Form id="modifyMealForm">
-              <div className="form-group">
-                <label>Name</label>
-                <Field className="form-control mb-3" name="name"/>
-                <ErrorMessage className="alert alert-danger" name="name"/>
-              </div>
-              <div className="form-group">
-                <label>Description</label>
-                <Field className="form-control mb-3" name="description"/>
-                <ErrorMessage className="alert alert-danger" name="description"/>
-              </div>
-              <div className="form-group">
-                <label>Price</label>
-                <Field component="input" type="number" step="0.01" min="0" placeholder="Price" className="form-control mb-1" name="price"/>
-                <ErrorMessage className="alert alert-danger" name="price"/>
-              </div>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
-  )
-}
-const Meals: React.FC<{
-  meals?: [Meal]
-   deleteMeal: (id:number) => void
-   modifyMeal: (meal:Meal) => void
-   addMeal: (meal:Meal) => void
-  canAdd?: boolean
-  isInOrder?: boolean
-  }> = ({meals,canAdd,isInOrder,deleteMeal,modifyMeal,addMeal}) => {
-
-  const classes = useStyles();
-  const [modify,setModify] = useState({
-    visible: false,
-    id: 0,
-    name: '',
-    description: '',
-    price: 0
-  })
-
-  return (
-    <div className={classes.root}>
-      {canAdd && <Formik 
-        initialValues= {{
-          id: 0,
-          name: '',
-          description: '',
-          price: ('' as unknown) as number
+      ]}
+    >
+      <Formik
+        initialValues={{
+          id: modify.id,
+          name: modify.name,
+          description: modify.description,
+          price: modify.price
         }}
         validationSchema={
           Yup.object().shape({
@@ -133,112 +74,148 @@ const Meals: React.FC<{
             price: Yup.number().required("Required")
           })
         }
-        onSubmit={(values)=> addMeal(values)}
+        onSubmit={(values) => modifyMeal(values)}
       >
-        { props => (
-            <Form id="addMealForm" className="unselectable">
-              <Paper key="addMeal" className={classes.paper}>
-                <Grid container spacing={2} className="pb-4 unselectable">
-                  <Grid item className="my-auto">
-                    <ButtonBase className={classes.image}>
-                      <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-                    </ButtonBase>
-                  </Grid>
-                  <Grid item xs={12} sm container>
-                    <Grid item xs container direction="column" spacing={2}>
-                      <Grid item xs>
-                        <Typography gutterBottom variant="subtitle1">
-                          <div className="form-group">
-                            <Field placeholder="Name" className="form-control mb-1" name="name"/>
-                            <ErrorMessage className="alert alert-danger" name="name"/>
-                          </div>
-                          <div className="form-group">
-                            <Field placeholder="Description" className="form-control mb-1" name="description"/>
-                            <ErrorMessage className="alert alert-danger" name="description"/>
-                          </div>
-                          <div className="form-group">
-                            <Field component="input" type="number" step="0.01" min="0" placeholder="Price" className="form-control mb-1" name="price"/>
-                            <ErrorMessage className="alert alert-danger" name="price"/>
-                          </div>
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid item className="mx-4 my-auto">
-                      <Typography variant="subtitle1">
-                        <Button
-                          form="addMealForm" key="submit" htmlType="submit"
-                          shape="round" type="primary" style={{background: 'green'}}>Add meal</Button>
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Form>
-          )}
-      </Formik>}
-      {meals?.map(meal => (
-      <Paper key={meal.id} className={classes.paper}>
-        <Grid container spacing={2} className="pb-4 unselectable">
-          <Grid item  className="my-auto unselectable">
-            <ButtonBase className={classes.image}>
-              <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-            </ButtonBase>
-          </Grid>
-          <Grid item xs={12} sm container>
-            <Grid item xs container direction="column" spacing={2}>
-              <Grid item xs>
-                <Typography gutterBottom variant="subtitle1">
-                  <span className="nameText">{meal.name}</span>
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {meal.description}
-                </Typography>
-              </Grid>
-              {isInOrder === false ?<Grid item>
-                <Typography variant="body2" style={{ cursor: 'pointer' }}>
-                  <Button className="mr-4" shape="round" type="primary" style={{color: 'black'}} danger onClick={e => deleteMeal(meal.id ?? 0)}>Remove</Button>
-                  <Button className="mr-4" shape="round" type="primary" onClick={e => {
-                    setModify({
-                    visible: true,
-                    id:meal.id ?? 0,
-                    name:meal.name ?? '',
-                    description: meal.description ?? '',
-                    price: meal.price ?? 0
-                    })}}>Modify</Button>
-                </Typography>
-              </Grid> : null }
-            </Grid>
-            <Grid item>
-              <Typography variant="subtitle1">
-                <span className="descriptionText">
-                  {meal?.price?.toFixed(2) + " $"}
-                </span>
-              </Typography>
-              <Typography variant="body2">
-                <span className="descriptionText">
-                  {meal && meal.quantity ? ""+meal.quantity+" QTY" : null}
-                </span>
-              </Typography>
-              
-              <Typography variant="body2">
-                <span className="descriptionText">
-                  {meal && meal.quantity && meal.price ? ""+(meal.quantity * meal.price).toFixed(2)+" TOT" : null}
-                </span>
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Paper>))}
-      {modify.visible && <ModifyModal 
-        modify={modify} 
+        {props => (
+          <Form id="modifyMealForm">
+            <div className="form-group">
+              <label>Name</label>
+              <Field className="form-control mb-3" name="name" />
+              <ErrorMessage className="alert alert-danger" name="name" />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <Field className="form-control mb-3" name="description" />
+              <ErrorMessage className="alert alert-danger" name="description" />
+            </div>
+            <div className="form-group">
+              <label>Price</label>
+              <Field component="input" type="number" step="0.01" min="0" placeholder="Price" className="form-control mb-1" name="price" />
+              <ErrorMessage className="alert alert-danger" name="price" />
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </Modal>
+  )
+}
+const Meals: React.FC<{
+  meals?: [Meal]
+  deleteMeal: (id: number) => void
+  modifyMeal: (meal: Meal) => void
+  addMeal: (meal: Meal) => void
+  canAdd?: boolean
+  isInOrder?: boolean
+}> = ({ meals, canAdd, isInOrder, deleteMeal, modifyMeal, addMeal }) => {
+
+  const classes = useStyles();
+  const [modify, setModify] = useState({
+    visible: false,
+    id: 0,
+    name: '',
+    description: '',
+    price: 0
+  })
+  const [addModal, setAddModal] = useState(false)
+  console.log(canAdd)
+  return (
+    <div className={classes.root}>
+      <Button className="unselectable rounded mb-4 mx-auto"
+        type="primary" onClick={() => setAddModal(true)}>Add meal</Button>
+      {canAdd &&
+        <Modal visible={addModal} title="Add meal"
+          footer={[
+            <Button
+              form="addMealForm" key="submit" htmlType="submit">Add</Button>
+            , <Button onClick={() => setAddModal(false)}>Cancel</Button>
+          ]}
+        >
+
+          <Formik
+            initialValues={{
+              id: (undefined as unknown) as number,
+              description: (undefined as unknown) as string,
+              name: (undefined as unknown) as string,
+              price: (undefined as unknown) as number
+            }}
+            validationSchema={
+              Yup.object().shape({
+                name: Yup.string().required("Required"),
+                description: Yup.string().required("Required"),
+                price: Yup.number().required("Required")
+              })
+            }
+            onSubmit={(values) => addMeal(values)}
+          >
+            {props => (
+              <Form id="addMealForm" className="unselectable">
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.name}
+                  placeholder="Name"
+                  name="name"
+                  onChange={e => props.setFieldValue('name', e.target.value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="name" />
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.description}
+                  placeholder="Description"
+                  name="description"
+                  onChange={e => props.setFieldValue('description', e.target.value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="description" />
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.price}
+                  placeholder="Price"
+                  type="number"
+                  step="0.01"
+                  name="price"
+                  onChange={e => props.setFieldValue('price', e.target.value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="price" />
+              </Form>
+            )}
+          </Formik>
+        </Modal>}
+      <div className="site-card-wrapper flex" >
+        {meals?.map(meal => (
+          <Card
+            className="mr-5 mb-5"
+            style={{ width: 250, display: 'inline-block' }}
+            cover={
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+              />
+            }
+            extra={meal.price + "$"}
+            actions={[
+              <EditOutlined key="edit" title="Edit" onClick={e => {
+                setModify({
+                  visible: true,
+                  id: meal.id ?? 0,
+                  name: meal.name ?? '',
+                  description: meal.description ?? '',
+                  price: meal.price ?? 0
+                })
+              }} />,
+              <DeleteOutlined title="Delete" key="ellipsis" onClick={e => deleteMeal(meal.id ?? 0)} />]}
+          >
+            <Meta title={meal.name} description={meal.description} />
+          </Card>))}
+      </div>
+      {modify.visible && <ModifyModal
+        modify={modify}
         modifyMeal={modifyMeal}
         setModify={() => setModify({
-            id: 0,
-            name: '',
-            visible:false,
-            description: '',
-            price: 0
-          })}/>}
+          id: 0,
+          name: '',
+          visible: false,
+          description: '',
+          price: 0
+        })} />}
     </div>
   )
 }

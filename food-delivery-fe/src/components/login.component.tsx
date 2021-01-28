@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from 'yup';
 import FacebookLogin from 'react-facebook-login';
+import { Input } from "antd";
 
 
 interface LoginProps {
@@ -27,16 +28,27 @@ const Login: React.FC<LoginProps> = ({ onLogin,onFacebookAuth }) => {
             onLogin(values.userName, values.password);
           }}
         >
-          {({ errors, touched }) => (
+          {(props) => (
             <Form>
               <div className="form-group">
-                <label>Username</label>
-                <Field className="form-control mb-3" name="userName" />
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.userName}
+                  placeholder="Username"
+                  name="userName"
+                  onChange={(e:any) => props.setFieldValue('userName',e.target.value)}
+                />
                 <ErrorMessage className="alert alert-danger" name="userName" />
               </div>
               <div className="form-group">
-                <label>Password</label>
-                <Field className="form-control" name="password" component="input" type="password" />
+              <Input
+                  className="mb-2 rounded"
+                  value={props.values.password}
+                  placeholder="Password"
+                  name="password"
+                  type="password"
+                  onChange={(e:any) => props.setFieldValue('password',e.target.value)}
+                />
                 <ErrorMessage className="alert alert-danger" name="password" />
               </div>
 

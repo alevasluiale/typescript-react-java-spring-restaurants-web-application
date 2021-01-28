@@ -120,9 +120,11 @@ public class RestaurantController {
                     .body(new MessageResponse("Error: Restaurant does not exists!"));
         }
         Restaurant restaurant = restaurantRepository.getOne(restaurantId);
-        for(Meal meal : restaurant.getMeals()) {
-            orderMealRepository.deleteByMealId(meal.getId());
-            restaurant.removeMeal(meal);
+        if(restaurant.getMeals() != null) {
+            for(Meal meal : restaurant.getMeals()) {
+                orderMealRepository.deleteByMealId(meal.getId());
+                restaurant.removeMeal(meal);
+            }
         }
         List<OrderResponseNoRestaurant> orders = orderRepository.findByRestaurantsId(restaurantId);
         for(OrderResponseNoRestaurant order:orders) {

@@ -1,6 +1,8 @@
 @import '~antd/dist/antd.css';
+@import '~antd/dist/antd.dark.css';
 @import '~ag-grid-community/dist/styles/ag-grid.css';
 @import '~ag-grid-community/dist/styles/ag-theme-balham.css';
+@import '~ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 @tailwind base;
 
 @tailwind components;

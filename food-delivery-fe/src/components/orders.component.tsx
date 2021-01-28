@@ -10,6 +10,7 @@ import { GridReadyEvent } from 'ag-grid-community';
 import Meals from "./meals.component";
 import AuthService from "./../services/auth.service";
 
+
 function getLatestOrderStatus(orderStatuses: Array<{
   status: {
     name: string
@@ -71,8 +72,8 @@ const OperationCellRenderer: React.FC<any> = (props) => {
         onConfirm={() => modifyOrder(props.data.id, "CANCELED")}
       >
         <Button
-          className="-mt-10 mx-auto"
-          style={{ cursor: 'pointer', width: '100%', height: "100%" }}
+          className=" mx-auto"
+          style={{ background: '#301934',color:"white", cursor: 'pointer', width: '100%', height: "100%" }}
           title="Cancel order"
         >Cancel</Button>
       </Popconfirm>)
@@ -81,7 +82,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       onConfirm={() => modifyOrder(props.data.id, "PROCESSING")}
     >
       <Button
-        className="-mt-10 mx-auto"
+        className=" mx-auto"
         style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Process order"
       >Process</Button>
@@ -93,7 +94,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       onConfirm={() => modifyOrder(props.data.id, "IN_ROUTE")}
     >
       <Button
-        className="-mt-10 mx-auto"
+        className="mx-auto"
         style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Send In route"
       >Send</Button>
@@ -105,7 +106,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       onConfirm={() => modifyOrder(props.data.id, "DELIVERED")}
     >
       <Button
-        className="-mt-10 mx-auto"
+        className="mx-auto"
         style={{ cursor: 'pointer', width: '100%', height: "100%" }}
         title="Deliver order"
       >Deliver</Button>
@@ -117,8 +118,8 @@ const OperationCellRenderer: React.FC<any> = (props) => {
       onConfirm={() => modifyOrder(props.data.id, "RECEIVED")}
     >
       <Button
-        className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
+        className="mx-auto"
+        style={{ background: '#301934',color:"white", cursor: 'pointer', width: '100%', height: "100%" }}
         title="Mark as received"
       >Mark Received</Button>
     </Popconfirm>)
@@ -129,7 +130,7 @@ const MealsCellRenderer: React.FC<any> = (props) => {
   const [visible, setVisible] = useState(false)
 
   return (
-    <div style={{ textAlign: 'left' }} className="-mt-10">
+    <div className="unselectable">
       <Modal
         className=" mx-auto"
         visible={visible}
@@ -157,9 +158,8 @@ const MealsCellRenderer: React.FC<any> = (props) => {
           })} />
       </Modal>
       <Button
-        type="primary"
-        className="-mt-10 mx-auto rounded"
-        style={{ cursor: 'pointer', width: '100%', height: "100%" }}
+        className="my-auto mx-auto rounded"
+        style={{ background: '#301934',color:"white",cursor: 'pointer', width: '100%', height: "100%" }}
         title="Open meals"
         onClick={() => setVisible(true)}
       >Show</Button>
@@ -196,8 +196,8 @@ const StatusHistoryCellRenderer: React.FC<any> = (props) => {
 
       </Modal>
       <Button
-        className="-mt-10 mx-auto"
-        style={{ cursor: 'pointer', width: '100%', height: "20%" }}
+        className="mx-auto"
+        style={{ background: '#301934',color:"white", cursor: 'pointer', width: '100%', height: "20%" }}
         title="Open meals"
         onClick={() => setVisible(true)}
       >Show</Button>
@@ -233,7 +233,7 @@ const Orders: React.FC<{
       sortable: true,
       filter: true,
       resizable: true,
-      width: 250,
+      maxWidth: 200,
       filterParams: {
         applyButton: true,
         resetButton: true,
@@ -248,7 +248,7 @@ const Orders: React.FC<{
       sortable: true,
       filter: true,
       resizable: true,
-      width: 150,
+      maxWidth: 100,
       filterParams: {
         applyButton: true,
         resetButton: true,
@@ -331,10 +331,9 @@ const Orders: React.FC<{
 
   return (
     <div className={classes.root}>
-      <h3 style={{ color: 'blue' }}>Orders</h3>
-      <div style={{ height: "500px" }} className="ag-theme-balham h-screen">
+      <div style={{ height: "500px" }} className="unselectable ag-theme-alpine-dark h-screen">
         <AgGridReact
-          rowHeight={35}
+          rowHeight={37}
           columnDefs={columnDefs}
           rowData={orders ?? []}
           pagination={true}

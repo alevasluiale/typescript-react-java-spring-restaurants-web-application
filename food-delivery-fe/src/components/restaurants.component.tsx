@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { Modal, Button, TreeSelect, Popconfirm } from 'antd';
+import { Modal, Button, TreeSelect, Popconfirm, Input } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
+import { Card, Avatar, Col, Row } from 'antd';
+import { EditOutlined, DeleteOutlined, GlobalOutlined } from '@ant-design/icons';
 import { Restaurant } from "../models/Restaurant";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Meal } from "../models/Meal";
 
+const { Meta } = Card;
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -40,11 +42,11 @@ const Restaurants: React.FC<{
   restaurants?: [Restaurant]
   meals?: [Meal]
   isRegularUser?: boolean
-  addOrder?:(meals: Array<any>,restaurantId?:number) => void
+  addOrder?: (meals: Array<any>, restaurantId?: number) => void
   deleteRestaurant: (id: number) => void
   modifyRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
   addRestaurant: (restaurant: Restaurant, mealsIds: Array<Number>) => void
-}> = ({ restaurants, meals, isRegularUser,addOrder, deleteRestaurant, modifyRestaurant, addRestaurant }) => {
+}> = ({ restaurants, meals, isRegularUser, addOrder, deleteRestaurant, modifyRestaurant, addRestaurant }) => {
 
   const classes = useStyles();
   const [mealsModal, setMealsModal] = useState({
@@ -69,208 +71,172 @@ const Restaurants: React.FC<{
     if (value === undefined) return []
     else return value
   }
+
+  const [addModal, setAddModal] = useState(false)
   return (
     <div className={classes.root}>
-      {isRegularUser === false ? <Formik
-        initialValues={{
-          id: 0,
-          description: '',
-          name: '',
-          mealsIds: []
-        }}
-        validationSchema={
-          Yup.object().shape({
-            name: Yup.string().required("Required"),
-            description: Yup.string().required("Required"),
-            mealsIds: Yup.array().required("Required")
-          })
-        }
-        onSubmit={(values) => addRestaurant(values, values.mealsIds)}
-      >
-        {props => (
-          <Form id="addRestaurantForm" className="unselectable">
-            <Paper key="addRestaurant" className={classes.paper}>
-              <Grid container spacing={2} className="pb-4 unselectable">
-                <Grid item className="my-auto">
-                  <ButtonBase className={classes.image}>
-                    <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-                  </ButtonBase>
-                </Grid>
-                <Grid item xs={12} sm container>
-                  <Grid item xs container direction="column" spacing={2}>
-                    <Grid item xs>
-                      <Typography gutterBottom variant="subtitle1">
-                        <div className="form-group">
-                          <Field placeholder="Name" className="form-control mb-1" name="name" />
-                          <ErrorMessage className="alert alert-danger" name="name" />
-                        </div>
-                        <div className="form-group">
-                          <Field placeholder="Description" className="form-control mb-1" name="description" />
-                          <ErrorMessage className="alert alert-danger" name="description" />
-                        </div>
-                        <div className="form-group">
-                          <TreeSelect
-                            showSearch
-                            style={{ width: '100%' }}
-                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                            treeData={meals?.map((meal: Meal) => {
-                              return {
-                                title: meal.name,
-                                value: meal.id,
-                                key: meal.id
-                              }
-                            })}
-                            placeholder="Select meals"
-                            allowClear
-                            treeCheckable={true}
-                            showCheckedStrategy="SHOW_PARENT"
-                            treeDefaultExpandAll
-                            value={props.values.mealsIds}
-                            onChange={value => props.setFieldValue("mealsIds", value)}
-                          />
-                          <ErrorMessage className="alert alert-danger" name="mealsIds" />
-                        </div>
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid item className="mx-4 my-auto">
-                    <Typography variant="subtitle1">
-                      <Button
-                        form="addRestaurantForm" key="submit" htmlType="submit"
-                        shape="round" type="primary" style={{ background: 'green' }}>Add restaurant</Button>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Form>
-        )}
-      </Formik> : null}
-      {restaurants?.map(restaurant => (
-        <Paper key={restaurant.id} className={classes.paper}>
-          <Grid container spacing={2} className="pb-4 unselectable">
-            <Grid item className="my-auto unselectable">
-              <ButtonBase className={classes.image}>
-                <img className={classes.img} alt="complex" src="https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/bear-face.png" />
-              </ButtonBase>
-            </Grid>
-            <Grid item xs={12} sm container>
-              <Grid item xs container direction="column" spacing={2}>
-                <Grid item xs>
-                  <Typography gutterBottom variant="subtitle1">
-                    <span className="nameText">{restaurant.name}</span>
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {restaurant.description}
-                  </Typography>
-                </Grid>
-                {isRegularUser === false ? <Grid item>
-                  <Typography variant="body2" style={{ cursor: 'pointer' }}>
-                    <Button className="mr-4" shape="round" type="primary" style={{ color: 'black' }} danger onClick={e => deleteRestaurant(restaurant.id ?? 0)}>Remove</Button>
-                    <Button className="mr-4" shape="round" type="primary" onClick={e => setModify({
-                      visible: true,
-                      id: restaurant.id ?? 0,
-                      name: restaurant.name ?? '',
-                      description: restaurant.description ?? '',
-                      mealsIds: removeUndefinedFromArray(restaurant.meals?.map(meal => meal.id))
-                    })}>Modify</Button>
-                  </Typography>
-                </Grid> : null}
-              </Grid>
-              <Grid item className="my-auto mx-auto">
-                <Typography variant="subtitle1">
-                  <Button shape="round" type="primary" style={{ background: 'green' }}
-                    onClick={() => {
-                      setMealsModal({ visible: true, restaurant: restaurant, meals: removeUndefinedFromArray(restaurant.meals) })
-                      setMealsIdsAndQuantity(
-                        removeUndefinedFromArray(restaurant.meals).map((meal: Meal) => {
-                          return {
-                            id: meal.id,
-                            quantity: meal.quantity,
-                            price: meal.price
-                          }
-                        }
-                        ))
-                    }}>
-                    Browse
-              </Button>
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          {
-            mealsModal.visible && <Modal
-              visible={mealsModal.visible}
-              title={"Order from " + mealsModal.restaurant.name}
-              okText="Place order"
-              footer={[
-                <Popconfirm
-                  key="popconfirm"
-                  onConfirm={() => addOrder ? addOrder(
-                    mealsIdsAndQuantity,
-                    mealsModal.restaurant.id
-                  ) : {}}
-                  title="Are you sure you want to place this order ?">
-                  <Button key="save" type="primary">
-                    Place order
+      {isRegularUser === false &&
+        <Button className="unselectable rounded mb-4 mx-auto"
+          type="primary" onClick={() => setAddModal(true)}>Add restaurant</Button>}
+      {addModal &&
+        <Modal visible={addModal} title="Add restaurant"
+          footer={[
+            <Button
+              form="addRestaurantForm" key="submit" htmlType="submit">Add</Button>
+            , <Button onClick={() => setAddModal(false)}>Cancel</Button>
+          ]}
+        >
+          <Formik
+            initialValues={{
+              id: (undefined as unknown) as number,
+              description: (undefined as unknown) as string,
+              name: (undefined as unknown) as string,
+              mealsIds: (undefined as unknown) as Array<number>
+            }}
+            validationSchema={
+              Yup.object().shape({
+                name: Yup.string().required("Required"),
+                description: Yup.string().required("Required"),
+                mealsIds: Yup.array().required("Required")
+              })
+            }
+            onSubmit={(values) => addRestaurant(values, values.mealsIds)}
+          >
+            {props => (
+              <Form id="addRestaurantForm" className="unselectable">
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.name}
+                  placeholder="Name"
+                  name="name"
+                  onChange={e => props.setFieldValue('name', e.target.value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="name" />
+                <Input
+                  className="mb-2 rounded"
+                  value={props.values.description}
+                  placeholder="Description"
+                  name="description"
+                  onChange={e => props.setFieldValue('description', e.target.value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="description" />
+                <TreeSelect
+                  showSearch
+                  className="mb-2 rounded"
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={meals?.map((meal: Meal) => {
+                    return {
+                      title: meal.name,
+                      value: meal.id,
+                      key: meal.id
+                    }
+                  })}
+                  placeholder="Select meals"
+                  allowClear
+                  treeCheckable={true}
+                  showCheckedStrategy="SHOW_PARENT"
+                  treeDefaultExpandAll
+                  value={props.values.mealsIds}
+                  onChange={value => props.setFieldValue("mealsIds", value)}
+                />
+                <ErrorMessage className="alert alert-danger" name="mealsIds" />
+              </Form>
+            )}
+          </Formik>
+        </Modal>}
+
+      <div className="site-card-wrapper flex" >
+        {restaurants?.map(restaurant => (
+          <Card
+            className="mr-5 mb-5"
+            style={{ width: 250, display: 'inline-block' }}
+            cover={
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+              />
+            }
+            actions={[
+              <GlobalOutlined key="setting" title="Order" onClick={() => {
+                setMealsModal({ visible: true, restaurant: restaurant, meals: removeUndefinedFromArray(restaurant.meals) })
+                setMealsIdsAndQuantity(
+                  removeUndefinedFromArray(restaurant.meals).map((meal: Meal) => {
+                    return {
+                      id: meal.id,
+                      quantity: meal.quantity,
+                      price: meal.price
+                    }
+                  }
+                  ))
+              }} />,
+              (isRegularUser === false)
+                ? <EditOutlined key="edit" title="Edit" onClick={e => setModify({
+                  visible: true,
+                  id: restaurant.id ?? 0,
+                  name: restaurant.name ?? '',
+                  description: restaurant.description ?? '',
+                  mealsIds: removeUndefinedFromArray(restaurant.meals?.map(meal => meal.id))
+                })} /> : null,
+              (isRegularUser === false)
+                ? <DeleteOutlined title="Delete" key="ellipsis" onClick={e => deleteRestaurant(restaurant.id ?? 0)} /> : null
+            ]}
+          >
+            <Meta
+              title={restaurant.name}
+              description={restaurant.description}
+            />
+          </Card>))}
+      </div>
+      {
+        mealsModal.visible && <Modal
+          visible={mealsModal.visible}
+          style={{height:"400px",overflow:'auto'}}
+          width={320}
+          title={"Order from " + mealsModal.restaurant.name}
+          okText="Place order"
+          footer={[
+            <Popconfirm
+              key="popconfirm"
+              onConfirm={() => addOrder ? addOrder(
+                mealsIdsAndQuantity,
+                mealsModal.restaurant.id
+              ) : {}}
+              title="Are you sure you want to place this order ?">
+              <Button key="save" type="primary">
+                Place order
                 </Button>
-                </Popconfirm>, <Button onClick={() => {
-                  setMealsModal({ visible: false, restaurant: {}, meals: [] })
-                  setMealsIdsAndQuantity([{ id: 0, quantity: 0 ,price:0}])
-                }}>Cancel</Button>]}
-              onCancel={() => {
-                setMealsModal({ visible: false, restaurant: {}, meals: [] })
-                setMealsIdsAndQuantity([{ id: 0, quantity: 0 ,price:0}])
-              }
-              }
-            >
-              {mealsModal.meals?.map((meal, index) => (
-                <Paper key={meal.id} className={classes.paper}>
-                  <Grid container spacing={2} className="pb-4 unselectable">
-                    <Grid item xs={12} sm container>
-                      <Grid item xs container direction="column" spacing={2}>
-                        <Grid item xs>
-                          <Typography gutterBottom variant="subtitle1">
-                            <span className="nameText">{meal.name}</span>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {meal.description}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-
-                      <Grid className="mx-auto" item xs container direction="column" spacing={10}></Grid>
-                      <Grid className="mx-auto" item xs container direction="column" spacing={10}>
-                        <Grid item xs >
-                          <Typography gutterBottom variant="subtitle1" >
-                            <span className="nameText">{meal.price?.toFixed(2) + " $"}</span>
-                          </Typography>
-                          <Typography variant="subtitle1" gutterBottom className="flex">
-                            <input
-                              onChange={event => {
-                                setMealsIdsAndQuantity(mealsIdsAndQuantity.map((value, idx) => {
-                                  if (index === idx) return { id: value.id, quantity: Number(event.target.value),price:value.price }
-                                  else return value
-                                }))
-                              }
-                              }
-                              type="number" placeholder="Quantity" step="1" className="w-1/3" />
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Paper>))}
-
-            </Modal>
+            </Popconfirm>, <Button onClick={() => {
+              setMealsModal({ visible: false, restaurant: {}, meals: [] })
+              setMealsIdsAndQuantity([{ id: 0, quantity: 0, price: 0 }])
+            }}>Cancel</Button>]}
+          onCancel={() => {
+            setMealsModal({ visible: false, restaurant: {}, meals: [] })
+            setMealsIdsAndQuantity([{ id: 0, quantity: 0, price: 0 }])
           }
-
-        </Paper>))
+          }
+        >
+            {mealsModal.meals?.map((meal, index) => (
+              <Card
+                title={meal.name}
+                type="inner"
+                className="mb-1"
+                style={{ width: 250, display: 'inline-block' }}
+                extra={meal.price + " $"}
+              >
+                <p>{meal.description}</p>
+                <Input
+                  onChange={event => {
+                    setMealsIdsAndQuantity(mealsIdsAndQuantity.map((value, idx) => {
+                      if (index === idx) return { id: value.id, quantity: Number(event.target.value), price: value.price }
+                      else return value
+                    }))
+                  }
+                  }
+                  type="number" placeholder="Quantity" step="1" />
+              </Card>))}
+        </Modal>
       }
-
-
-
-
 
       {
         modify.visible && <Modal
@@ -311,12 +277,20 @@ const Restaurants: React.FC<{
               <Form id="modifyRestaurantForm">
                 <div className="form-group">
                   <label>Name</label>
-                  <Field className="form-control mb-3" name="name" />
+                  <Input
+                    value={props.values.name}
+                    name="name"
+                    onChange={e => props.setFieldValue('name', e.target.value)}
+                  />
                   <ErrorMessage className="alert alert-danger" name="name" />
                 </div>
                 <div className="form-group">
                   <label>Description</label>
-                  <Field className="form-control mb-3" name="description" />
+                  <Input
+                    value={props.values.description}
+                    name="description"
+                    onChange={e => props.setFieldValue('description', e.target.value)}
+                  />
                   <ErrorMessage className="alert alert-danger" name="description" />
                 </div>
                 <div className="form-group">
