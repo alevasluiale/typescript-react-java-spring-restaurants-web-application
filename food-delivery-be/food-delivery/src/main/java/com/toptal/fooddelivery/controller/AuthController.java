@@ -22,12 +22,16 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -159,6 +163,9 @@ public class AuthController {
     @PostMapping("/facebook-signIn")
     public ResponseEntity<?> signInWithFacebook(@RequestBody FacebookRequest userDetails) {
 
+        if(userDetails.getAccessToken() == null || userDetails.getAccessToken().isBlank() || userDetails.getAccessToken().isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error :Facebook auth failed"));
+        }
         User currentUser = userRepository.findByEmailIgnoreCase(userDetails.getEmail());
         if(currentUser == null) {
             User user = new User();
@@ -175,21 +182,27 @@ public class AuthController {
             user.setRoles(roles);
             user.setTypes(types);
             user.setEnabled(true);
-            user.setPassword(encoder.encode("facebookPass"));
+            user.setFacebookToken(encoder.encode(userDetails.getAccessToken()));
             currentUser = userRepository.save(user);
         }
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(currentUser.getUsername(), "facebookPass"));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImpl currentUserDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = currentUserDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(currentUser.getUsername(),currentUser.getFacebookToken(),
+                        currentUser.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                        .collect(Collectors.toList())));
+
+        String jwt = jwtUtils.generateJwtTokenFromUsername(SecurityContextHolder.getContext().getAuthentication());
+
+
+        List<String> roles = currentUser.getRoles().stream()
+                .map(item -> item.getName().name())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(new JwtResponse(jwt,
-                currentUserDetails.getId(),
-                currentUserDetails.getUsername(),
-                currentUserDetails.getEmail(),
+                currentUser.getId(),
+                currentUser.getUsername(),
+                currentUser.getEmail(),
                 roles));
     }
 }

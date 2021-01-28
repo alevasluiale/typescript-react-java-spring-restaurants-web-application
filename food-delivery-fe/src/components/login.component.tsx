@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from 'yup';
 import FacebookLogin from 'react-facebook-login';
 import { Input } from "antd";
@@ -7,7 +7,7 @@ import { Input } from "antd";
 
 interface LoginProps {
   onLogin: (userName: string, password: string) => void
-  onFacebookAuth: (username: string,email:string,photoUrl:string)=>void
+  onFacebookAuth: (username: string,email:string,photoUrl:string,accessToken:string)=>void
 }
 const Login: React.FC<LoginProps> = ({ onLogin,onFacebookAuth }) => {
 
@@ -65,7 +65,7 @@ const Login: React.FC<LoginProps> = ({ onLogin,onFacebookAuth }) => {
                   appId="1788569767990308"
                   autoLoad={false}
                   fields="name,email,picture"
-                  callback={(response: any) =>  onFacebookAuth(response.name,response.email,response.picture.data.url)}
+                  callback={(response: any) =>  onFacebookAuth(response.name,response.email,response.picture.data.url,response.accessToken)}
                   typeButton="primary"
                   buttonStyle={{ width: '100%' }}
                   icon="fa-facebook"

@@ -31,7 +31,6 @@ public class User {
     @Email
     private String email;
 
-    @NotBlank
     @Size(max = 120)
     private String password;
 
@@ -62,6 +61,17 @@ public class User {
             joinColumns = {@JoinColumn(name="user_id")},
             inverseJoinColumns = {@JoinColumn(name="restaurant_id")})
     private Set<Restaurant> restaurants = new HashSet<Restaurant>();
+
+    @Column(columnDefinition = "varchar(250) default ''")
+    private String facebookToken;
+
+    public String getFacebookToken() {
+        return facebookToken;
+    }
+
+    public void setFacebookToken(String facebookToken) {
+        this.facebookToken = facebookToken;
+    }
 
     public boolean isBlocked() {
         return blocked;

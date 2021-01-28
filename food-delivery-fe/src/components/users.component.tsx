@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: "10px auto",
     maxWidth: 800,
+    background:'black'
   },
   image: {
     width: 128,
@@ -96,7 +97,8 @@ const Users: React.FC<{
                       <Typography gutterBottom variant="subtitle1">
                         <div className="form-group">
                           <Field placeholder="Username" className="form-control mb-1" name="username" />
-                          <ErrorMessage className="alert alert-danger" name="username" />
+                          <ErrorMessage 
+                          className="alert alert-danger" name="username" />
                         </div>
                         <div className="form-group">
                           <Field placeholder="Email" className="form-control mb-1" name="email" />

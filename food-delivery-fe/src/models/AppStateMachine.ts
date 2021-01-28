@@ -10,7 +10,7 @@ import { User } from "./User"
 
 export const createAppStateMachine = (currentUser?: User) =>
   Machine<AppStateMachineContext, AppStateMachineSchema, AppStateMachineEvent>({
-    initial: currentUser ? 'check_user_is_authenticated' : 'login_page',
+    initial: currentUser ? 'home' : 'login_page',
     id: 'app-state-machine',
     context: {
       currentUser: currentUser
@@ -472,7 +472,7 @@ export const createAppStateMachine = (currentUser?: User) =>
         return AuthService.checkIfUserIsLoggedIn(AuthService.getCurrentUser().username)
       },
       facebookAuth: (context,event) => {
-        return AuthService.facebookAuth((event as FacebookAuthEvent).payload.username,(event as FacebookAuthEvent).payload.email,(event as FacebookAuthEvent).payload.photoUrl)
+        return AuthService.facebookAuth((event as FacebookAuthEvent).payload.username,(event as FacebookAuthEvent).payload.email,(event as FacebookAuthEvent).payload.photoUrl,(event as FacebookAuthEvent).payload.accessToken)
       },
       loginService: (context, event) => {
 

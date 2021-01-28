@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Input, Card } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import { Meal } from "../models/Meal";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -108,6 +105,7 @@ const Meals: React.FC<{
   isInOrder?: boolean
 }> = ({ meals, canAdd, isInOrder, deleteMeal, modifyMeal, addMeal }) => {
 
+  console.log(meals,canAdd,isInOrder)
   const classes = useStyles();
   const [modify, setModify] = useState({
     visible: false,
@@ -117,11 +115,12 @@ const Meals: React.FC<{
     price: 0
   })
   const [addModal, setAddModal] = useState(false)
-  console.log(canAdd)
+
   return (
     <div className={classes.root}>
+      {canAdd && isInOrder === false &&
       <Button className="unselectable rounded mb-4 mx-auto"
-        type="primary" onClick={() => setAddModal(true)}>Add meal</Button>
+        type="primary" onClick={() => setAddModal(true)}>Add meal</Button>}
       {canAdd &&
         <Modal visible={addModal} title="Add meal"
           footer={[
@@ -183,16 +182,18 @@ const Meals: React.FC<{
         {meals?.map(meal => (
           <Card
             className="mr-5 mb-5"
-            style={{ width: 250, display: 'inline-block' }}
+            title={meal.name}
+            style={isInOrder === false ? { width:250, display: 'inline-block' } :
+          {width: '100%'}}
             cover={
-              <img
+              isInOrder === false && <img
                 alt="example"
                 src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
               />
             }
             extra={meal.price + "$"}
             actions={[
-              <EditOutlined key="edit" title="Edit" onClick={e => {
+              isInOrder === false && <EditOutlined key="edit" title="Edit" onClick={e => {
                 setModify({
                   visible: true,
                   id: meal.id ?? 0,
@@ -201,9 +202,10 @@ const Meals: React.FC<{
                   price: meal.price ?? 0
                 })
               }} />,
-              <DeleteOutlined title="Delete" key="ellipsis" onClick={e => deleteMeal(meal.id ?? 0)} />]}
+              isInOrder === false && <DeleteOutlined title="Delete" key="ellipsis" onClick={e => deleteMeal(meal.id ?? 0)} />]} 
           >
-            <Meta title={meal.name} description={meal.description} />
+            <Meta title={meal.description} />
+            {isInOrder && <p>{"Quantity: " + meal.quantity}</p>}
           </Card>))}
       </div>
       {modify.visible && <ModifyModal

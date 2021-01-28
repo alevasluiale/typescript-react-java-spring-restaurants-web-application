@@ -128,7 +128,7 @@ const OperationCellRenderer: React.FC<any> = (props) => {
 }
 const MealsCellRenderer: React.FC<any> = (props) => {
   const [visible, setVisible] = useState(false)
-
+  console.log(props.data.orderMeals)
   return (
     <div className="unselectable">
       <Modal

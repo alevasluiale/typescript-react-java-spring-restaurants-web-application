@@ -125,7 +125,8 @@ export type FacebookAuthEvent = {
   payload: {
     username: string,
     email: string,
-    photoUrl: string
+    photoUrl: string,
+    accessToken: string
   }
 }
 export type AddOrderEvent = {

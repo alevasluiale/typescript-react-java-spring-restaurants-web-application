@@ -1,11 +1,11 @@
 import React  from "react";
-import {Formik,Field,Form, ErrorMessage} from "formik";
+import {Formik,Form, ErrorMessage} from "formik";
 import FacebookLogin from 'react-facebook-login';
 import * as Yup from 'yup';
 import { Input } from "antd";
 interface RegisterProps {
   onRegister: (username: string,email:string, password: string) => void
-  onFacebookAuth: (username: string,email:string,photoUrl:string)=>void
+  onFacebookAuth: (username: string,email:string,photoUrl:string,accessToken:string)=>void
 }
 
 const Register: React.FC<RegisterProps> = ({onRegister,onFacebookAuth}) => {
@@ -76,7 +76,8 @@ const Register: React.FC<RegisterProps> = ({onRegister,onFacebookAuth}) => {
                   appId="1788569767990308"
                   autoLoad={false}
                   fields="name,email,picture"
-                  callback={(response: any) => onFacebookAuth(response.name,response.email,response.picture.data.url)}
+                  callback={(response: any) => 
+                    onFacebookAuth(response.name,response.email,response.picture.data.url,response.accessToken)}
                   typeButton="primary"
                   buttonStyle={{ width: '100%' }}
                   icon="fa-facebook"

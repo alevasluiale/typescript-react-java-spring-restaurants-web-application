@@ -21,7 +21,6 @@ import {
   VideoCameraOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import SubMenu from "antd/lib/menu/SubMenu";
 
 const { Header, Sider, Content } = Layout;
 export const App: React.FC = () => {
@@ -115,13 +114,14 @@ export const App: React.FC = () => {
                   }
                 })
               }}
-              onFacebookAuth={(username: string, email: string, photoUrl: string) =>
+              onFacebookAuth={(username: string, email: string, photoUrl: string,accessToken:string) =>
                 send({
                   type: 'FACEBOOK_AUTH',
                   payload: {
                     username: username,
                     email: email,
-                    photoUrl: photoUrl
+                    photoUrl: photoUrl,
+                    accessToken: accessToken
                   }
                 })}
             />
@@ -138,13 +138,14 @@ export const App: React.FC = () => {
                     password: password
                   }
                 })}
-              onFacebookAuth={(username: string, email: string, photoUrl: string) =>
+              onFacebookAuth={(username: string, email: string, photoUrl: string,accessToken:string) =>
                 send({
                   type: 'FACEBOOK_AUTH',
                   payload: {
                     username: username,
                     email: email,
-                    photoUrl: photoUrl
+                    photoUrl: photoUrl,
+                    accessToken: accessToken
                   }
                 })}
             />
@@ -175,6 +176,7 @@ export const App: React.FC = () => {
               meals={current.context.meals}
               isRegularUser={current.context.currentUser?.roles[0] === "ROLE_USER"}
               addOrder={(meals: Array<any>, restaurantId?: number) => {
+                console.log(meals,restaurantId)
                 send({
                   type: 'ADD_ORDER', payload: {
                     userId: current.context.currentUser?.id,
