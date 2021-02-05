@@ -36,7 +36,7 @@ export const App: React.FC = () => {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
           <Menu.Item key="home" icon={<UserOutlined />}
             onClick={e => { send({ type: 'HOME' }) }}>
-            TopTal
+            Home
             </Menu.Item>
           {current.context.currentUser &&
             <Menu.Item key="restaurants" icon={<UserOutlined />}
@@ -239,109 +239,6 @@ export const App: React.FC = () => {
         </Content>
       </Layout>
     </Layout>
-
-
-
-    //   <div>
-    //     <nav className="navbar navbar-expand navbar-dark bg-dark unselectable">
-    //       <span style={{ cursor: 'pointer' }} className="navbar-brand unselectable" onClick={e => {
-    //         send({ type: 'HOME' })
-    //       }}>
-    //         TopTal
-    //       </span>
-    //       <div className="navbar-nav mr-auto  unselectable">
-
-    //         {current.context.currentUser &&
-    //           (<li className="nav-item" onClick={e => {
-    //             send({ type: 'RESTAURANTS' })
-    //           }}>
-    //             <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
-    //               Restaurants
-    //               </span>
-    //           </li>
-    //           )}
-
-    //         {current.context.currentUser &&
-    //           (<li className="nav-item" onClick={e => {
-    //             send({ type: 'ORDERS' })
-    //           }}>
-    //             <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
-    //               Orders
-    //               </span>
-    //           </li>
-    //           )}
-
-    //         {current.context.currentUser &&
-    //           current.context.currentUser.roles[0] !== "ROLE_USER" &&
-    //           (<li className="nav-item" onClick={e => {
-    //             send({ type: 'MEALS' })
-    //           }}>
-    //             <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
-    //               Meals
-    //               </span>
-    //           </li>
-    //           )}
-
-
-    //         {current.context.currentUser &&
-    //           current.context.currentUser.roles[0] === "ROLE_ADMIN" && (
-    //             <li className="nav-item">
-    //               <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-    //                 send({ type: 'USERS' })
-    //               }}>
-    //                 Users
-    //               </span>
-    //             </li>
-    //           )}
-    //       </div>
-
-    //       {current.context.currentUser ? (
-    //         <div className="navbar-nav ml-auto unselectable">
-    //           <li className="nav-item">
-    //             <span style={{ cursor: 'pointer' }} className="nav-link unselectable">
-    //               {current.context.currentUser.username}
-    //             </span>
-    //           </li>
-    //           <li className="nav-item">
-    //             <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-    //               send({ type: 'LOG_OUT' })
-    //             }}>
-    //               Log out
-    //               </span>
-    //           </li>
-    //         </div>
-    //       ) : (
-    //           <div className="navbar-nav ml-auto unselectable">
-    //             <li className="nav-item">
-    //               <span style={{ cursor: 'pointer' }} className="nav-link unselectable"
-    //                 onClick={e => {
-    //                   send({
-    //                     type: 'LOGIN_PAGE'
-    //                   })
-    //                 }}>
-    //                 Login
-    //                 </span>
-    //             </li>
-
-    //             <li className="nav-item">
-    //               <span style={{ cursor: 'pointer' }} className="nav-link unselectable" onClick={e => {
-    //                 send({
-    //                   type: 'SIGN_UP'
-    //                 })
-    //               }}>
-    //                 Sign Up
-    //               </span>
-    //             </li>
-    //           </div>
-    //         )}
-    //     </nav>
-
-    //     <div className="container py-4">
-    //       
-
-    //     </div>
-    //   </div>
-    // )
   )
 }
 

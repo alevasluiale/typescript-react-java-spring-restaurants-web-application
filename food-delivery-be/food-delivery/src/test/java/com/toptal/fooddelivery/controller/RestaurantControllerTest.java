@@ -1,8 +1,8 @@
-package com.toptal.fooddelivery.controller;
+package com.huhurezmarius.fooddelivery.controller;
 
-import com.toptal.fooddelivery.model.Meal;
-import com.toptal.fooddelivery.model.Restaurant;
-import com.toptal.fooddelivery.response.RestaurantResponse;
+import com.huhurezmarius.fooddelivery.model.Meal;
+import com.huhurezmarius.fooddelivery.model.Restaurant;
+import com.huhurezmarius.fooddelivery.response.RestaurantResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

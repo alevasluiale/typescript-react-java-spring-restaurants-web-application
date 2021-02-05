@@ -8,11 +8,11 @@
 		<version>2.4.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.toptal</groupId>
+	<groupId>com.huhurezmarius</groupId>
 	<artifactId>food-delivery</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>food-delivery</name>
-	<description>TopTal Food Delivery Web App Spring React</description>
+	<description>Food Delivery Web App Spring React</description>
 
 	<properties>
 		<java.version>15</java.version>

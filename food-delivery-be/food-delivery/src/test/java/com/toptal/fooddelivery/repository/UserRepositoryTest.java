@@ -1,6 +1,6 @@
-package com.toptal.fooddelivery.repository;
+package com.huhurezmarius.fooddelivery.repository;
 
-import com.toptal.fooddelivery.model.User;
+import com.huhurezmarius.fooddelivery.model.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

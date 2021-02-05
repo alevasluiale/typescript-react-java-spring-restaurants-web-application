@@ -1,4 +1,4 @@
-package com.toptal.fooddelivery;
+package com.huhurezmarius.fooddelivery;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
