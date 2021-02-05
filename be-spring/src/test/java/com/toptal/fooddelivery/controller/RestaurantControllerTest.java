@@ -1,9 +1,7 @@
-package com.huhurezmarius.fooddelivery.controller;
+package com.huhurezmarius.restaurants.controller;
 
-import com.huhurezmarius.fooddelivery.model.Meal;
-import com.huhurezmarius.fooddelivery.model.Restaurant;
-import com.huhurezmarius.fooddelivery.response.RestaurantResponse;
-import org.junit.Test;
+import com.huhurezmarius.restaurants.model.Meal;
+import com.huhurezmarius.restaurants.model.Restaurant;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

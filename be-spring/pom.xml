@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.huhurezmarius</groupId>
-	<artifactId>food-delivery</artifactId>
+	<artifactId>restaurants</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>food-delivery</name>
+	<name>restaurants</name>
 	<description>Food Delivery Web App Spring React</description>
 
 	<properties>

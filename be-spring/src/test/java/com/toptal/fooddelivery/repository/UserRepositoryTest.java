@@ -1,6 +1,6 @@
-package com.huhurezmarius.fooddelivery.repository;
+package com.huhurezmarius.restaurants.repository;
 
-import com.huhurezmarius.fooddelivery.model.User;
+import com.huhurezmarius.restaurants.model.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
